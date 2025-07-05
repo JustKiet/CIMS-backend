@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cims-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - cims_network
+
+  postgres:
+    image: postgres:latest
+    container_name: cims-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - cims_postgres_data:/var/lib/postgresql/data
+    networks:
+      - cims_network
+
+volumes:
+  cims_postgres_data:
+    driver: local
+
+networks:
+  cims_network:
+    driver: bridge
