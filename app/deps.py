@@ -1,10 +1,10 @@
-from app.infrastructure.database.session import PostgresSessionFactory
-from app.infrastructure.auth import Authenticator
-from app.infrastructure.config import settings
+from app.database.session import PostgresSessionFactory
+from app.auth import Authenticator
+from app.config import settings
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from app.domain.repositories.headhunter_repository import HeadhunterRepository
-from app.infrastructure.gateways.sqlalchemy_headhunter_repository import SQLAlchemyHeadhunterRepository
+from app.core.repositories.headhunter_repository import HeadhunterRepository
+from app.clients.sqlalchemy.headhunter_repository import SQLAlchemyHeadhunterRepository
 
 def get_db_session(): 
     factory = PostgresSessionFactory(

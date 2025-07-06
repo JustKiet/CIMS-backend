@@ -4,7 +4,7 @@ import datetime
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException, Depends
 from jose import JWTError, jwt
-from app.domain.repositories.headhunter_repository import HeadhunterRepository, Headhunter
+from app.core.repositories.headhunter_repository import HeadhunterRepository, Headhunter
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

@@ -1,8 +1,8 @@
-from app.domain.entities.level import Level
-from app.domain.repositories.level_repository import LevelRepository
-from app.infrastructure.database.models import LevelDB
+from app.core.entities.level import Level
+from app.core.repositories.level_repository import LevelRepository
+from app.database.models import LevelDB
 from sqlalchemy.orm import Session
-from app.domain.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyLevelRepository(LevelRepository):

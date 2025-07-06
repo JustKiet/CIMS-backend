@@ -1,4 +1,4 @@
-from app.domain.entities.expertise import Expertise
+from app.core.entities.expertise import Expertise
 from abc import ABC, abstractmethod
 from typing import Optional
 

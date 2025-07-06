@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from app.infrastructure.auth import Authenticator
-from app.domain.repositories.headhunter_repository import HeadhunterRepository
+from app.auth import Authenticator
+from app.core.repositories.headhunter_repository import HeadhunterRepository
 from app.usecases.authentication import HeadhunterAuthenticationUsecase, NotFoundError, InvalidCredentialsError
 from app.schemas.requests.headhunter_create import HeadhunterCreate
-from app.schemas.responses.headhunter_out import HeadhunterOut
+from app.schemas.responses.headhunter_response import HeadhunterResponse
 from app.schemas.responses.token import Token
-from app.infrastructure.config import CLogger
+from app.config import CLogger
 from app.deps import get_headhunter_repository, get_authenticator
 import traceback
 
@@ -24,13 +24,13 @@ async def _(
     payload: HeadhunterCreate,
     authenticator: Authenticator = Depends(get_authenticator),
     headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
-) -> HeadhunterOut:
+) -> HeadhunterResponse:
     """
     Register a new headhunter and return their details.
     
     :param HeadhunterCreate payload: The payload containing headhunter details.
-    :return: HeadhunterOut: A response containing the created headhunter's details.
-    :rtype: HeadhunterOut
+    :return: HeadhunterResponse: A response containing the created headhunter's details.
+    :rtype: HeadhunterResponse
     :raises HTTPException: If headhunter creation fails unexpectedly.
     """
     try:
@@ -88,12 +88,12 @@ async def _(
 @router.get("/me")
 async def get_current_headhunter(
     authenticator: Authenticator = Depends(get_authenticator),
-) -> HeadhunterOut:
+) -> HeadhunterResponse:
     """
     Get the current authenticated headhunter's details.
     
-    :return: HeadhunterOut: A response containing the current headhunter's details.
-    :rtype: HeadhunterOut
+    :return: HeadhunterResponse: A response containing the current headhunter's details.
+    :rtype: HeadhunterResponse
     :raises HTTPException: If headhunter not found or authentication fails.
     """
     try:
@@ -102,7 +102,7 @@ async def get_current_headhunter(
         if not headhunter.headhunter_id:
             raise HTTPException(status_code=404, detail="Headhunter not found")
 
-        return HeadhunterOut(
+        return HeadhunterResponse(
             headhunter_id=headhunter.headhunter_id,
             name=headhunter.name,
             phone=headhunter.phone,

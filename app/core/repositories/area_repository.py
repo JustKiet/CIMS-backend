@@ -1,4 +1,4 @@
-from app.domain.entities.area import Area
+from app.core.entities.area import Area
 from abc import ABC, abstractmethod
 from typing import Optional
 

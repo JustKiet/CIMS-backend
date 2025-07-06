@@ -1,7 +1,7 @@
-from app.domain.entities.candidate import Candidate
-from app.domain.repositories.candidate_repository import CandidateRepository
-from app.domain.exceptions import NotFoundError
-from app.infrastructure.database.models import CandidateDB
+from app.core.entities.candidate import Candidate
+from app.core.repositories.candidate_repository import CandidateRepository
+from app.core.exceptions import NotFoundError
+from app.database.models import CandidateDB
 from sqlalchemy.orm import Session
 from typing import Optional
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.auth import router as auth_router
-from app.infrastructure.config import CLogger
+from app.config import CLogger
 
 logger = CLogger(__name__).get_logger()
 

@@ -1,7 +1,7 @@
-from app.domain.entities.project import Project
-from app.domain.repositories.project_repository import ProjectRepository
-from app.domain.exceptions import NotFoundError
-from app.infrastructure.database.models import ProjectDB
+from app.core.entities.project import Project
+from app.core.repositories.project_repository import ProjectRepository
+from app.core.exceptions import NotFoundError
+from app.database.models import ProjectDB
 from sqlalchemy.orm import Session
 from typing import Optional
 

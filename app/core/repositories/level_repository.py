@@ -1,4 +1,4 @@
-from app.domain.entities.level import Level
+from app.core.entities.level import Level
 from abc import ABC, abstractmethod
 from typing import Optional
 

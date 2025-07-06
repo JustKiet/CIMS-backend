@@ -1,8 +1,8 @@
-from app.domain.entities.field import Field
-from app.domain.repositories.field_repository import FieldRepository
-from app.infrastructure.database.models import FieldDB
+from app.core.entities.field import Field
+from app.core.repositories.field_repository import FieldRepository
+from app.database.models import FieldDB
 from sqlalchemy.orm import Session
-from app.domain.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyFieldRepository(FieldRepository):

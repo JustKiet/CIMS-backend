@@ -1,4 +1,4 @@
-from app.domain.entities.candidate import Candidate
+from app.core.entities.candidate import Candidate
 from abc import ABC, abstractmethod
 from typing import Optional
 

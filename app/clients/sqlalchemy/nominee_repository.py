@@ -1,7 +1,7 @@
-from app.domain.entities.nominee import Nominee
-from app.domain.repositories.nominee_repository import NomineeRepository
-from app.domain.exceptions import NotFoundError
-from app.infrastructure.database.models import NomineeDB
+from app.core.entities.nominee import Nominee
+from app.core.repositories.nominee_repository import NomineeRepository
+from app.core.exceptions import NotFoundError
+from app.database.models import NomineeDB
 from sqlalchemy.orm import Session
 from typing import Optional
 

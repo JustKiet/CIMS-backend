@@ -1,7 +1,7 @@
-from app.domain.entities.customer import Customer
-from app.domain.repositories.customer_repository import CustomerRepository
-from app.domain.exceptions import NotFoundError
-from app.infrastructure.database.models import CustomerDB
+from app.core.entities.customer import Customer
+from app.core.repositories.customer_repository import CustomerRepository
+from app.core.exceptions import NotFoundError
+from app.database.models import CustomerDB
 from sqlalchemy.orm import Session
 from typing import Optional
 

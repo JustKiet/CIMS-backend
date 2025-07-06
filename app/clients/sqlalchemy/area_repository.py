@@ -1,7 +1,7 @@
-from app.domain.entities.area import Area
-from app.domain.repositories.area_repository import AreaRepository
-from app.domain.exceptions import NotFoundError
-from app.infrastructure.database.models import AreaDB
+from app.core.entities.area import Area
+from app.core.repositories.area_repository import AreaRepository
+from app.core.exceptions import NotFoundError
+from app.database.models import AreaDB
 from sqlalchemy.orm import Session
 from typing import Optional
 

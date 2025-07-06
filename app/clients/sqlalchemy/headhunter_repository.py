@@ -1,8 +1,8 @@
-from app.domain.entities.headhunter import Headhunter
-from app.domain.repositories.headhunter_repository import HeadhunterRepository
-from app.infrastructure.database.models import HeadhunterDB
+from app.core.entities.headhunter import Headhunter
+from app.core.repositories.headhunter_repository import HeadhunterRepository
+from app.database.models import HeadhunterDB
 from sqlalchemy.orm import Session
-from app.domain.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyHeadhunterRepository(HeadhunterRepository):

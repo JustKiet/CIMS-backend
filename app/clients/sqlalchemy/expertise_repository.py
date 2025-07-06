@@ -1,8 +1,8 @@
-from app.domain.entities.expertise import Expertise
-from app.domain.repositories.expertise_repository import ExpertiseRepository
-from app.infrastructure.database.models import ExpertiseDB
+from app.core.entities.expertise import Expertise
+from app.core.repositories.expertise_repository import ExpertiseRepository
+from app.database.models import ExpertiseDB
 from sqlalchemy.orm import Session
-from app.domain.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyExpertiseRepository(ExpertiseRepository):

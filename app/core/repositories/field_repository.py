@@ -1,4 +1,4 @@
-from app.domain.entities.field import Field
+from app.core.entities.field import Field
 from abc import ABC, abstractmethod
 from typing import Optional
 

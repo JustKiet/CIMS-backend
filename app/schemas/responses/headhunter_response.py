@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 
-class HeadhunterOut(BaseModel):
+class HeadhunterResponse(BaseModel):
     headhunter_id: int
     name: str
     phone: str

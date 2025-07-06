@@ -19,7 +19,7 @@ class PostgresSessionFactory:
         Create all tables in the database.
         This method should be called once to initialize the database schema.
         """
-        from app.infrastructure.database.models import Base
+        from app.database.models import Base
         Base.metadata.create_all(self._engine)
 
     def get_session(self) -> Session:

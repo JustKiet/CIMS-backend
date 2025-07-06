@@ -1,4 +1,4 @@
-from app.domain.entities.project import Project
+from app.core.entities.project import Project
 from abc import ABC, abstractmethod
 from typing import Optional
 

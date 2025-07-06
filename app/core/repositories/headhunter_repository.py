@@ -1,4 +1,4 @@
-from app.domain.entities.headhunter import Headhunter
+from app.core.entities.headhunter import Headhunter
 from abc import ABC, abstractmethod
 from typing import Optional
 

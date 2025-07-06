@@ -1,4 +1,4 @@
-from app.domain.entities.customer import Customer
+from app.core.entities.customer import Customer
 from abc import ABC, abstractmethod
 from typing import Optional
 

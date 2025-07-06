@@ -1,11 +1,11 @@
-from app.infrastructure.auth import Authenticator
-from app.domain.repositories.headhunter_repository import HeadhunterRepository
-from app.domain.exceptions import NotFoundError, InvalidCredentialsError, UnexpectedError
+from app.auth import Authenticator
+from app.core.repositories.headhunter_repository import HeadhunterRepository
+from app.core.exceptions import NotFoundError, InvalidCredentialsError, UnexpectedError
 from app.schemas.requests.headhunter_create import HeadhunterCreate
 from app.schemas.responses.token import Token
-from app.schemas.responses.headhunter_out import HeadhunterOut
-from app.domain.entities.headhunter import Headhunter
-from app.infrastructure.config import CLogger
+from app.schemas.responses.headhunter_response import HeadhunterResponse
+from app.core.entities.headhunter import Headhunter
+from app.config import CLogger
 
 logger = CLogger(__name__).get_logger()
 
@@ -14,13 +14,13 @@ class HeadhunterAuthenticationUsecase:
         self.headhunter_repository = headhunter_repository
         self.authenticator = authenticator
 
-    def register(self, payload: HeadhunterCreate) -> HeadhunterOut:
+    def register(self, payload: HeadhunterCreate) -> HeadhunterResponse:
         """
         Register a new headhunter.
 
         :param HeadhunterCreate payload: The payload containing headhunter details.
         :return: A response containing the created headhunter's details.
-        :rtype: HeadhunterOut
+        :rtype: HeadhunterResponse
         :raises UnexpectedError: If the headhunter creation fails unexpectedly.
         """
         headhunter = Headhunter(
@@ -38,7 +38,7 @@ class HeadhunterAuthenticationUsecase:
             logger.error("Failed to create headhunter. No ID returned.")
             raise UnexpectedError("Failed to create headhunter. No ID returned.")
         
-        return HeadhunterOut(
+        return HeadhunterResponse(
             headhunter_id=headhunter.headhunter_id,
             name=headhunter.name,
             phone=headhunter.phone,
