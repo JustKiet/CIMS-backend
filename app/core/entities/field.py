@@ -21,11 +21,21 @@ class Field:
     @property
     def name(self) -> str:
         return self._name
+    
+    @property
+    def created_at(self) -> datetime.datetime:
+        return self._created_at
+    
+    @property
+    def updated_at(self) -> datetime.datetime:
+        return self._updated_at
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "field_id": self._field_id,
-            "name": self._name
+            "name": self._name,
+            "created_at": self._created_at,
+            "updated_at": self._updated_at
         }
     
     def __repr__(self) -> str:

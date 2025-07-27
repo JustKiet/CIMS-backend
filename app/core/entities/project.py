@@ -115,6 +115,14 @@ class Project:
     @property
     def level_id(self) -> int:
         return self._level_id
+    
+    @property
+    def created_at(self) -> datetime.datetime:
+        return self._created_at
+    
+    @property
+    def updated_at(self) -> datetime.datetime:
+        return self._updated_at
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -131,7 +139,9 @@ class Project:
             "customer_id": self._customer_id,
             "expertise_id": self._expertise_id,
             "area_id": self._area_id,
-            "level_id": self._level_id
+            "level_id": self._level_id,
+            "created_at": self._created_at,
+            "updated_at": self._updated_at
         }
     
     def __repr__(self) -> str:

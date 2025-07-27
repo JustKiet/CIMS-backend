@@ -6,8 +6,8 @@ from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyFieldRepository(FieldRepository):
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
 
     def _to_domain_entity(self, db_obj: FieldDB) -> Field:
         return Field(
@@ -19,16 +19,16 @@ class SQLAlchemyFieldRepository(FieldRepository):
 
     def create_field(self, field: Field) -> Field:
         db_obj = FieldDB(**field.to_dict())
-        self.session.add(db_obj)
-        self.session.commit()
-        self.session.refresh(db_obj)
+        self.db_session.add(db_obj)
+        self.db_session.commit()
+        self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
 
     def get_field_by_id(self, field_id: int) -> Optional[Field]:
         if not field_id:
             raise ValueError("Field ID must be provided.")
         
-        db_obj = self.session.get(FieldDB, field_id)
+        db_obj = self.db_session.get(FieldDB, field_id)
         if not db_obj:
             return None
         return self._to_domain_entity(db_obj)
@@ -37,25 +37,44 @@ class SQLAlchemyFieldRepository(FieldRepository):
         if not field.field_id:
             raise ValueError("Field ID must be provided for update.")
         
-        db_obj = self.session.get(FieldDB, field.field_id)
+        db_obj = self.db_session.get(FieldDB, field.field_id)
         if not db_obj:
             raise NotFoundError(entity="Field", identifier=field.field_id)
         
         for key, value in field.to_dict().items():
             setattr(db_obj, key, value)
             
-        self.session.commit()
-        self.session.refresh(db_obj)
+        self.db_session.commit()
+        self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
 
     def delete_field(self, field_id: int) -> bool:
         if not field_id:
             raise ValueError("Field ID must be provided for deletion.")
         
-        field_db = self.session.query(FieldDB).filter_by(id=field_id).first()
-        if not field_db:
+        db_obj = self.db_session.get(FieldDB, field_id)
+        if not db_obj:
             raise NotFoundError(entity="Field", identifier=field_id)
-        
-        self.session.delete(field_db)
-        self.session.commit()
+
+        self.db_session.delete(db_obj)
+        self.db_session.commit()
         return True
+
+    def get_field_id_by_name(self, field_name: str) -> Optional[int]:
+        if not field_name:
+            raise ValueError("Field name must be provided.")
+        
+        db_obj = self.db_session.query(FieldDB).filter(FieldDB.name == field_name).first()
+        if not db_obj:
+            return None
+        return db_obj.field_id
+
+    def get_all_fields(self, limit: int = 100, offset: int = 0) -> list[Field]:
+        db_objs = self.db_session.query(FieldDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(db_obj) for db_obj in db_objs]
+
+    def search_fields_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Field]:
+        db_objs = self.db_session.query(FieldDB).filter(
+            FieldDB.name.ilike(f"%{name_query}%")
+        ).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(db_obj) for db_obj in db_objs]

@@ -9,7 +9,6 @@ class CandidateDB(Base):
     
     candidate_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(40), nullable=False)
-    party: Mapped[str] = mapped_column(VARCHAR(20), nullable=False)
     phone: Mapped[str] = mapped_column(VARCHAR(15), nullable=False)
     email: Mapped[str] = mapped_column(VARCHAR(60), nullable=False)
     year_of_birth: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -44,15 +43,15 @@ class ProjectDB(Base):
     __tablename__ = 'projects'
 
     project_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(60), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
     start_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     end_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     budget: Mapped[float] = mapped_column(Float, nullable=False)
     budget_currency: Mapped[str] = mapped_column(VARCHAR(3), nullable=False)
-    type: Mapped[str] = mapped_column(VARCHAR(8), nullable=False)
+    type: Mapped[str] = mapped_column(VARCHAR(32), nullable=False)
     required_recruits: Mapped[int] = mapped_column(Integer, nullable=False)
     recruited: Mapped[int] = mapped_column(Integer, nullable=False)
-    status: Mapped[str] = mapped_column(VARCHAR(12), nullable=False)
+    status: Mapped[str] = mapped_column(VARCHAR(64), nullable=False)
     customer_id: Mapped[int] = mapped_column(Integer, ForeignKey("customers.customer_id"), nullable=False)
     expertise_id: Mapped[int] = mapped_column(Integer, ForeignKey("expertises.expertise_id"), nullable=False)
     area_id: Mapped[int] = mapped_column(Integer, ForeignKey("areas.area_id"), nullable=False)
@@ -79,7 +78,7 @@ class NomineeDB(Base):
 
     nominee_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     campaign: Mapped[str] = mapped_column(String(40), nullable=False)
-    status: Mapped[str] = mapped_column(VARCHAR(12), nullable=False)
+    status: Mapped[str] = mapped_column(VARCHAR(64), nullable=False)
     years_of_experience: Mapped[int] = mapped_column(Integer, nullable=False)
     salary_expectation: Mapped[float] = mapped_column(Float, nullable=False)
     notice_period: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -105,6 +104,10 @@ class CustomerDB(Base):
     customer_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(60), nullable=False)
     field_id: Mapped[int] = mapped_column(Integer, ForeignKey("fields.field_id"), nullable=False)
+    representative_name: Mapped[str] = mapped_column(String(40), nullable=False)
+    representative_phone: Mapped[str] = mapped_column(VARCHAR(15), nullable=False)
+    representative_email: Mapped[str] = mapped_column(VARCHAR(60), nullable=False)
+    representative_role: Mapped[str] = mapped_column(String(40), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), 
         default=lambda: datetime.datetime.now(datetime.timezone.utc)

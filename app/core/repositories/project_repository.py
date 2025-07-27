@@ -48,3 +48,28 @@ class ProjectRepository(ABC):
         :raises NotFoundError: If the project with the given ID does not exist.
         """
         pass
+
+    @abstractmethod
+    def get_all_projects(self, limit: int = 100, offset: int = 0) -> list[Project]:
+        """
+        Retrieve all projects from the repository with pagination.
+
+        :param int limit: The maximum number of projects to return.
+        :param int offset: The number of projects to skip.
+        :return: A list of project entities.
+        :rtype: list[Project]
+        """
+        pass
+
+    @abstractmethod
+    def search_projects_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Project]:
+        """
+        Search projects by name using a partial match.
+
+        :param str name_query: The name query to search for.
+        :param int limit: The maximum number of projects to return.
+        :param int offset: The number of projects to skip.
+        :return: A list of matching project entities.
+        :rtype: list[Project]
+        """
+        pass

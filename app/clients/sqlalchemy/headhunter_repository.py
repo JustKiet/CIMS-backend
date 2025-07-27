@@ -6,8 +6,8 @@ from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
 
     def _to_domain_entity(self, db_obj: HeadhunterDB) -> Headhunter:
         return Headhunter(
@@ -30,16 +30,16 @@ class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
         headhunter_dict.pop('updated_at', None)
         
         db_obj = HeadhunterDB(**headhunter_dict)
-        self.session.add(db_obj)
-        self.session.commit()
-        self.session.refresh(db_obj)
+        self.db_session.add(db_obj)
+        self.db_session.commit()
+        self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
 
     def get_headhunter_by_id(self, headhunter_id: int) -> Optional[Headhunter]:
         if not headhunter_id:
             raise ValueError("Headhunter ID must be provided.")
         
-        db_obj = self.session.get(HeadhunterDB, headhunter_id)
+        db_obj = self.db_session.get(HeadhunterDB, headhunter_id)
         if not db_obj:
             return None
         return self._to_domain_entity(db_obj)
@@ -48,7 +48,7 @@ class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
         if not email:
             raise ValueError("Email must be provided.")
         
-        db_obj = self.session.query(HeadhunterDB).filter(HeadhunterDB.email == email).first()
+        db_obj = self.db_session.query(HeadhunterDB).filter(HeadhunterDB.email == email).first()
         if not db_obj:
             return None
         return self._to_domain_entity(db_obj)
@@ -57,7 +57,7 @@ class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
         if not headhunter.headhunter_id:
             raise ValueError("Headhunter ID must be provided for update.")
         
-        db_obj = self.session.get(HeadhunterDB, headhunter.headhunter_id)
+        db_obj = self.db_session.get(HeadhunterDB, headhunter.headhunter_id)
         if not db_obj:
             raise NotFoundError(entity="Headhunter", identifier=headhunter.headhunter_id)
         
@@ -71,18 +71,28 @@ class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
         for key, value in headhunter_dict.items():
             setattr(db_obj, key, value)
             
-        self.session.commit()
-        self.session.refresh(db_obj)
+        self.db_session.commit()
+        self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
 
     def delete_headhunter(self, headhunter_id: int) -> bool:
         if not headhunter_id:
             raise ValueError("Headhunter ID must be provided for deletion.")
         
-        db_obj = self.session.get(HeadhunterDB, headhunter_id)
+        db_obj = self.db_session.get(HeadhunterDB, headhunter_id)
         if not db_obj:
             raise NotFoundError(entity="Headhunter", identifier=headhunter_id)
         
-        self.session.delete(db_obj)
-        self.session.commit()
+        self.db_session.delete(db_obj)
+        self.db_session.commit()
         return True
+
+    def get_all_headhunters(self, limit: int = 100, offset: int = 0) -> list[Headhunter]:
+        db_objs = self.db_session.query(HeadhunterDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(db_obj) for db_obj in db_objs]
+
+    def search_headhunters_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Headhunter]:
+        db_objs = self.db_session.query(HeadhunterDB).filter(
+            HeadhunterDB.name.ilike(f"%{name_query}%")
+        ).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(db_obj) for db_obj in db_objs]

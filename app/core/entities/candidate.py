@@ -112,7 +112,7 @@ class Candidate:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "candidate_id": str(self._candidate_id),
+            "candidate_id": self._candidate_id,
             "name": self._name,
             "phone": self._phone,
             "email": self._email,
@@ -126,8 +126,8 @@ class Candidate:
             "level_id": self._level_id,
             "headhunter_id": self._headhunter_id,
             "note": self._note,
-            "created_at": self._created_at.isoformat(),
-            "updated_at": self._updated_at.isoformat()
+            "created_at": self._created_at,
+            "updated_at": self._updated_at
         }
 
     def __repr__(self) -> str:

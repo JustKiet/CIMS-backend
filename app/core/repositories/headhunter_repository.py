@@ -59,3 +59,28 @@ class HeadhunterRepository(ABC):
         :raises NotFoundError: If the Headhunter with the given ID does not exist.
         """
         pass
+
+    @abstractmethod
+    def get_all_headhunters(self, limit: int = 100, offset: int = 0) -> list[Headhunter]:
+        """
+        Retrieve all headhunters from the repository with pagination.
+
+        :param int limit: The maximum number of headhunters to return.
+        :param int offset: The number of headhunters to skip.
+        :return: A list of headhunter entities.
+        :rtype: list[Headhunter]
+        """
+        pass
+
+    @abstractmethod
+    def search_headhunters_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Headhunter]:
+        """
+        Search headhunters by name using a partial match.
+
+        :param str name_query: The name query to search for.
+        :param int limit: The maximum number of headhunters to return.
+        :param int offset: The number of headhunters to skip.
+        :return: A list of matching headhunter entities.
+        :rtype: list[Headhunter]
+        """
+        pass

@@ -73,3 +73,17 @@ class SQLAlchemyProjectRepository(ProjectRepository):
         self.db_session.delete(db_obj)
         self.db_session.commit()
         return True
+
+    def get_all_projects(self, limit: int = 100, offset: int = 0) -> list[Project]:
+        db_projects = self.db_session.query(ProjectDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(project) for project in db_projects]
+
+    def search_projects_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Project]:
+        db_projects = (
+            self.db_session.query(ProjectDB)
+            .filter(ProjectDB.name.ilike(f"%{name_query}%"))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(project) for project in db_projects]

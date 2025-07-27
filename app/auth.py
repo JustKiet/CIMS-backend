@@ -37,10 +37,11 @@ class Authenticator:
     def get_current_user(self, token: str = Depends(oauth2_scheme)) -> Headhunter:
         try:
             payload = jwt.decode(token, self._SECRET_KEY, algorithms=[self._ALGORITHM])
-            user_id = payload.get("sub")
-            if user_id is None:
+            user_id_str = payload.get("sub")
+            if user_id_str is None:
                 raise HTTPException(status_code=401, detail="Could not validate credentials")
-        except JWTError:
+            user_id = int(user_id_str)
+        except (JWTError, ValueError):
             raise HTTPException(status_code=401, detail="Could not validate credentials")
 
         headhunter = self._headhunter_repository.get_headhunter_by_id(user_id)

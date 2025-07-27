@@ -6,8 +6,8 @@ from app.core.exceptions import NotFoundError
 from typing import Optional
 
 class SQLAlchemyLevelRepository(LevelRepository):
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
 
     def _to_domain_entity(self, db_obj: LevelDB) -> Level:
         return Level(
@@ -19,16 +19,16 @@ class SQLAlchemyLevelRepository(LevelRepository):
 
     def create_level(self, level: Level) -> Level:
         db_obj = LevelDB(**level.to_dict())
-        self.session.add(db_obj)
-        self.session.commit()
-        self.session.refresh(db_obj)
+        self.db_session.add(db_obj)
+        self.db_session.commit()
+        self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
 
     def get_level_by_id(self, level_id: int) -> Optional[Level]:
         if not level_id:
             raise ValueError("Level ID must be provided.")
         
-        db_obj = self.session.get(LevelDB, level_id)
+        db_obj = self.db_session.get(LevelDB, level_id)
         if not db_obj:
             return None
         return self._to_domain_entity(db_obj)
@@ -37,25 +37,46 @@ class SQLAlchemyLevelRepository(LevelRepository):
         if not level.level_id:
             raise ValueError("Level ID must be provided for update.")
         
-        db_obj = self.session.get(LevelDB, level.level_id)
+        db_obj = self.db_session.get(LevelDB, level.level_id)
         if not db_obj:
             raise NotFoundError(entity="Level", identifier=level.level_id)
         
         for key, value in level.to_dict().items():
             setattr(db_obj, key, value)
             
-        self.session.commit()
-        self.session.refresh(db_obj)
+        self.db_session.commit()
+        self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
 
     def delete_level(self, level_id: int) -> bool:
         if not level_id:
             raise ValueError("Level ID must be provided for deletion.")
         
-        level_db = self.session.query(LevelDB).filter_by(id=level_id).first()
+        level_db = self.db_session.get(LevelDB, level_id)
         if not level_db:
             raise NotFoundError(entity="Level", identifier=level_id)
         
-        self.session.delete(level_db)
-        self.session.commit()
+        self.db_session.delete(level_db)
+        self.db_session.commit()
         return True
+
+    def get_all_levels(self, limit: int = 100, offset: int = 0) -> list[Level]:
+        db_levels = self.db_session.query(LevelDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(level) for level in db_levels]
+
+    def get_level_id_by_name(self, level_name: str) -> Optional[int]:
+        if not level_name:
+            raise ValueError("Level name must be provided.")
+        
+        db_obj = self.db_session.query(LevelDB).filter(LevelDB.name == level_name).first()
+        return db_obj.level_id if db_obj else None
+
+    def search_levels_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Level]:
+        db_levels = (
+            self.db_session.query(LevelDB)
+            .filter(LevelDB.name.ilike(f"%{name_query}%"))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(level) for level in db_levels]

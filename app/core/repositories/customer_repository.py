@@ -13,6 +13,17 @@ class CustomerRepository(ABC):
         :rtype: Customer
         """
         pass
+
+    @abstractmethod
+    def get_customer_id_by_name(self, customer_name: str) -> Optional[int]:
+        """
+        Retrieve the ID of a customer by their name.
+
+        :param str customer_name: The name of the customer to retrieve.
+        :return: The ID of the customer if found, otherwise None.
+        :rtype: Optional[int]
+        """
+        pass
     
     @abstractmethod
     def get_customer_by_id(self, customer_id: int) -> Optional[Customer]:
@@ -46,5 +57,30 @@ class CustomerRepository(ABC):
         :return: True if the customer was successfully deleted, False otherwise.
         :rtype: bool
         :raises NotFoundError: If the customer with the given ID does not exist.
+        """
+        pass
+
+    @abstractmethod
+    def get_all_customers(self, limit: int = 100, offset: int = 0) -> list[Customer]:
+        """
+        Retrieve all customers from the repository with pagination.
+
+        :param int limit: The maximum number of customers to return.
+        :param int offset: The number of customers to skip.
+        :return: A list of customer entities.
+        :rtype: list[Customer]
+        """
+        pass
+
+    @abstractmethod
+    def search_customers_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Customer]:
+        """
+        Search customers by name using a partial match.
+
+        :param str name_query: The name query to search for.
+        :param int limit: The maximum number of customers to return.
+        :param int offset: The number of customers to skip.
+        :return: A list of matching customer entities.
+        :rtype: list[Customer]
         """
         pass

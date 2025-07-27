@@ -36,6 +36,24 @@ class SQLAlchemyCandidateRepository(CandidateRepository):
         self.db_session.commit()
         self.db_session.refresh(new_candidate)
         return self._to_domain_entity(new_candidate)
+    
+    def get_all_candidates(self, limit: int = 100, offset: int = 0) -> list[Candidate]:
+        db_candidates = self.db_session.query(CandidateDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(candidate) for candidate in db_candidates]
+
+    def get_candidate_id_by_name(self, candidate_name: str) -> Optional[int]:
+        db_obj = self.db_session.query(CandidateDB).filter(CandidateDB.name == candidate_name).first()
+        return db_obj.candidate_id if db_obj else None
+
+    def search_candidates_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Candidate]:
+        db_candidates = (
+            self.db_session.query(CandidateDB)
+            .filter(CandidateDB.name.ilike(f"%{name_query}%"))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(candidate) for candidate in db_candidates]
 
     def get_candidate_by_id(self, candidate_id: int) -> Optional[Candidate]:
         if not candidate_id:

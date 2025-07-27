@@ -6,7 +6,9 @@ ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
+    apt-get install -y --no-install-recommends curl ca-certificates && \
+    curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv /root/.local/bin/uv /usr/local/bin/uv && \
     rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -14,7 +16,7 @@ WORKDIR /app
 
 # Copy dependencies and install Python packages
 COPY requirements.in .
-RUN pip install --index-url https://pypi.org/simple -r requirements.in
+RUN uv pip install --system --index-url https://pypi.org/simple -r requirements.in
 
 # Copy the app source code
 COPY . .

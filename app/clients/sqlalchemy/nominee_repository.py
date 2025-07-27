@@ -66,3 +66,47 @@ class SQLAlchemyNomineeRepository(NomineeRepository):
         self.db_session.delete(db_obj)
         self.db_session.commit()
         return True
+
+    def get_all_nominees(self, limit: int = 100, offset: int = 0) -> list[Nominee]:
+        db_nominees = self.db_session.query(NomineeDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(nominee) for nominee in db_nominees]
+
+    def get_nominees_by_candidate_id(self, candidate_id: int, limit: int = 100, offset: int = 0) -> list[Nominee]:
+        db_nominees = (
+            self.db_session.query(NomineeDB)
+            .filter(NomineeDB.candidate_id == candidate_id)
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(nominee) for nominee in db_nominees]
+
+    def get_nominees_by_project_id(self, project_id: int, limit: int = 100, offset: int = 0) -> list[Nominee]:
+        db_nominees = (
+            self.db_session.query(NomineeDB)
+            .filter(NomineeDB.project_id == project_id)
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(nominee) for nominee in db_nominees]
+
+    def search_nominees_by_campaign(self, campaign_query: str, limit: int = 100, offset: int = 0) -> list[Nominee]:
+        db_nominees = (
+            self.db_session.query(NomineeDB)
+            .filter(NomineeDB.campaign.ilike(f"%{campaign_query}%"))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(nominee) for nominee in db_nominees]
+
+    def search_nominees_by_status(self, status_query: str, limit: int = 100, offset: int = 0) -> list[Nominee]:
+        db_nominees = (
+            self.db_session.query(NomineeDB)
+            .filter(NomineeDB.status == status_query)
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(nominee) for nominee in db_nominees]

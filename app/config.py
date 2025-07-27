@@ -57,6 +57,7 @@ class CLogger:
 
         self.logger = logging.getLogger(name)
         self.logger.setLevel(level)
+        self.logger.propagate = False  # Prevent propagation to root logger
 
         # Avoid adding multiple handlers if logger already configured
         if not self.logger.handlers:

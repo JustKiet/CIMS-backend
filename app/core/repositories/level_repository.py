@@ -48,3 +48,39 @@ class LevelRepository(ABC):
         :raises NotFoundError: If the level with the given ID does not exist.
         """
         pass
+
+    @abstractmethod
+    def get_all_levels(self, limit: int = 100, offset: int = 0) -> list[Level]:
+        """
+        Retrieve all levels from the repository with pagination.
+
+        :param int limit: The maximum number of levels to return.
+        :param int offset: The number of levels to skip.
+        :return: A list of level entities.
+        :rtype: list[Level]
+        """
+        pass
+
+    @abstractmethod
+    def get_level_id_by_name(self, level_name: str) -> Optional[int]:
+        """
+        Retrieve the ID of a level by its name.
+
+        :param str level_name: The name of the level to retrieve.
+        :return: The ID of the level if found, otherwise None.
+        :rtype: Optional[int]
+        """
+        pass
+
+    @abstractmethod
+    def search_levels_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Level]:
+        """
+        Search levels by name using a partial match.
+
+        :param str name_query: The name query to search for.
+        :param int limit: The maximum number of levels to return.
+        :param int offset: The number of levels to skip.
+        :return: A list of matching level entities.
+        :rtype: list[Level]
+        """
+        pass

@@ -1,9 +1,8 @@
 from app.auth import Authenticator
 from app.core.repositories.headhunter_repository import HeadhunterRepository
 from app.core.exceptions import NotFoundError, InvalidCredentialsError, UnexpectedError
-from app.schemas.requests.headhunter_create import HeadhunterCreate
-from app.schemas.responses.token import Token
-from app.schemas.responses.headhunter_response import HeadhunterResponse
+from app.schemas.headhunter import HeadhunterCreate, HeadhunterResponse
+from app.schemas.auth import Token
 from app.core.entities.headhunter import Headhunter
 from app.config import CLogger
 
@@ -45,6 +44,8 @@ class HeadhunterAuthenticationUsecase:
             email=headhunter.email,
             area_id=headhunter.area_id,
             role=headhunter.role,
+            created_at=headhunter.created_at,
+            updated_at=headhunter.updated_at,
         )
     
     def authenticate(self, email: str, password: str) -> Token:
@@ -68,7 +69,7 @@ class HeadhunterAuthenticationUsecase:
             raise InvalidCredentialsError("Invalid email or password")
         
         access_token = self.authenticator.create_access_token(
-            data={"sub": headhunter.headhunter_id},
+            data={"sub": str(headhunter.headhunter_id)},
         )
 
         return Token(

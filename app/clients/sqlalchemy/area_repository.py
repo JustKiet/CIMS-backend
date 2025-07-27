@@ -23,6 +23,27 @@ class SQLAlchemyAreaRepository(AreaRepository):
         self.db_session.commit()
         self.db_session.refresh(new_area)
         return self._to_domain_entity(new_area)
+    
+    def get_all_areas(self, limit: int = 100, offset: int = 0) -> list[Area]:
+        db_areas = self.db_session.query(AreaDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(area) for area in db_areas]
+
+    def search_areas_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Area]:
+        db_areas = (
+            self.db_session.query(AreaDB)
+            .filter(AreaDB.name.ilike(f"%{name_query}%"))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(area) for area in db_areas]
+    
+    def get_area_id_by_name(self, area_name: str) -> Optional[int]:
+        if not area_name:
+            raise ValueError("Area name must be provided.")
+        
+        db_obj = self.db_session.query(AreaDB).filter(AreaDB.name == area_name).first()
+        return db_obj.area_id if db_obj else None
 
     def get_area_by_id(self, area_id: int) -> Optional[Area]:
         if not area_id:

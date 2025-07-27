@@ -51,6 +51,14 @@ class Headhunter:
     @property
     def area_id(self) -> int:
         return self._area_id
+    
+    @property
+    def created_at(self) -> datetime.datetime:
+        return self._created_at
+    
+    @property
+    def updated_at(self) -> datetime.datetime:
+        return self._updated_at
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -61,8 +69,8 @@ class Headhunter:
             "hashed_password": self._hashed_password,
             "role": self._role,
             "area_id": self._area_id,
-            "created_at": self._created_at.isoformat() if self._created_at else None,
-            "updated_at": self._updated_at.isoformat() if self._updated_at else None
+            "created_at": self._created_at,
+            "updated_at": self._updated_at
         }
     
     def __repr__(self) -> str:

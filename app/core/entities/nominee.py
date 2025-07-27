@@ -72,6 +72,14 @@ class Nominee:
     @property
     def project_id(self) -> int:
         return self._project_id
+    
+    @property
+    def created_at(self) -> datetime.datetime:
+        return self._created_at
+    
+    @property
+    def updated_at(self) -> datetime.datetime:
+        return self._updated_at
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -82,7 +90,9 @@ class Nominee:
             "salary_expectation": self._salary_expectation,
             "notice_period": self._notice_period,
             "candidate_id": self._candidate_id,
-            "project_id": self._project_id
+            "project_id": self._project_id,
+            "created_at": self._created_at,
+            "updated_at": self._updated_at
         }
     
     def __repr__(self) -> str:

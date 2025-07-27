@@ -13,6 +13,42 @@ class CandidateRepository(ABC):
         :rtype: Candidate
         """
         pass
+
+    @abstractmethod
+    def get_all_candidates(self, limit: int = 100, offset: int = 0) -> list[Candidate]:
+        """
+        Retrieve all candidates from the repository with pagination.
+
+        :param int limit: The maximum number of candidates to return.
+        :param int offset: The number of candidates to skip.
+        :return: A list of candidate entities.
+        :rtype: list[Candidate]
+        """
+        pass
+
+    @abstractmethod
+    def get_candidate_id_by_name(self, candidate_name: str) -> Optional[int]:
+        """
+        Retrieve the ID of a candidate by their name.
+
+        :param str candidate_name: The name of the candidate to retrieve.
+        :return: The ID of the candidate if found, otherwise None.
+        :rtype: Optional[int]
+        """
+        pass
+
+    @abstractmethod
+    def search_candidates_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Candidate]:
+        """
+        Search candidates by name using a partial match.
+
+        :param str name_query: The name query to search for.
+        :param int limit: The maximum number of candidates to return.
+        :param int offset: The number of candidates to skip.
+        :return: A list of matching candidate entities.
+        :rtype: list[Candidate]
+        """
+        pass
     
     @abstractmethod
     def get_candidate_by_id(self, candidate_id: int) -> Optional[Candidate]:

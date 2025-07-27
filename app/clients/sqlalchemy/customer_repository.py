@@ -14,6 +14,10 @@ class SQLAlchemyCustomerRepository(CustomerRepository):
             customer_id=db_obj.customer_id,
             name=db_obj.name,
             field_id=db_obj.field_id,
+            representative_name=db_obj.representative_name,
+            representative_phone=db_obj.representative_phone,
+            representative_email=db_obj.representative_email,
+            representative_role=db_obj.representative_role,
             created_at=db_obj.created_at,
             updated_at=db_obj.updated_at
         )
@@ -60,3 +64,24 @@ class SQLAlchemyCustomerRepository(CustomerRepository):
         self.db_session.delete(db_obj)
         self.db_session.commit()
         return True
+
+    def get_customer_id_by_name(self, customer_name: str) -> Optional[int]:
+        if not customer_name:
+            raise ValueError("Customer name must be provided.")
+        
+        db_obj = self.db_session.query(CustomerDB).filter(CustomerDB.name == customer_name).first()
+        return db_obj.customer_id if db_obj else None
+
+    def get_all_customers(self, limit: int = 100, offset: int = 0) -> list[Customer]:
+        db_customers = self.db_session.query(CustomerDB).offset(offset).limit(limit).all()
+        return [self._to_domain_entity(customer) for customer in db_customers]
+
+    def search_customers_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Customer]:
+        db_customers = (
+            self.db_session.query(CustomerDB)
+            .filter(CustomerDB.name.ilike(f"%{name_query}%"))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(customer) for customer in db_customers]
