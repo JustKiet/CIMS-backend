@@ -14,15 +14,20 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /app
 
-# Copy dependencies and install Python packages
-COPY requirements.in .
-RUN uv pip install --system --index-url https://pypi.org/simple -r requirements.in
+# Copy project configuration and requirements first
+COPY pyproject.toml requirements.in ./
 
-# Copy the app source code
+# Copy the source code
+COPY src/ ./src/
+
+# Install the package and its dependencies
+RUN uv pip install --system --index-url https://pypi.org/simple .
+
+# Copy the rest of the files
 COPY . .
 
 # Expose port for FastAPI
 EXPOSE 8000
 
 # COMMAND: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "cims.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
