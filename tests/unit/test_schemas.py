@@ -5,11 +5,11 @@ import pytest
 from datetime import datetime, date
 from typing import Any
 from pydantic import ValidationError
-from app.schemas.area import AreaCreate, AreaUpdate, AreaResponse
-from app.schemas.customer import CustomerCreate, CustomerUpdate
-from app.schemas.project import ProjectCreate
-from app.schemas.utils import create_list_response, entity_to_response_model
-from app.core.entities.area import Area
+from cims.schemas.area import AreaCreate, AreaUpdate, AreaResponse
+from cims.schemas.customer import CustomerCreate, CustomerUpdate
+from cims.schemas.project import ProjectCreate
+from cims.schemas.utils import create_list_response, entity_to_response_model
+from cims.core.entities.area import Area
 
 class TestSchemaValidation:
     """Test schema validation rules."""

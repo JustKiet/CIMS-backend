@@ -1,8 +1,8 @@
 # reset_db.py
 
-from app.database.session import PostgresSessionFactory
-from app.database.models import Base
-from app.config import settings
+from cims.database.session import PostgresSessionFactory
+from cims.database.models import Base
+from cims.config import settings
 
 def main():
     # Fill in with your actual DB credentials or load from config

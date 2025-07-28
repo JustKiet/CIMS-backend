@@ -19,20 +19,20 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 # Import after adding to path
-from app.database.models import Base
-from app.deps import get_db_session
+from cims.database.models import Base
+from cims.deps import get_db_session
 
 # Create a test app without the lifespan events
-from app.api.v1.auth import router as auth_router
-from app.api.v1.candidate import router as candidate_router
-from app.api.v1.headhunter import router as headhunter_router
-from app.api.v1.project import router as project_router
-from app.api.v1.customer import router as customer_router
-from app.api.v1.area import router as area_router
-from app.api.v1.level import router as level_router
-from app.api.v1.expertise import router as expertise_router
-from app.api.v1.field import router as field_router
-from app.api.v1.nominee import router as nominee_router
+from cims.api.v1.auth import router as auth_router
+from cims.api.v1.candidate import router as candidate_router
+from cims.api.v1.headhunter import router as headhunter_router
+from cims.api.v1.project import router as project_router
+from cims.api.v1.customer import router as customer_router
+from cims.api.v1.area import router as area_router
+from cims.api.v1.level import router as level_router
+from cims.api.v1.expertise import router as expertise_router
+from cims.api.v1.field import router as field_router
+from cims.api.v1.nominee import router as nominee_router
 
 # Test settings
 TEST_SECRET_KEY: str = "test-secret-key"

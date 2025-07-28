@@ -22,12 +22,12 @@ from sqlalchemy.orm import Session
 # Add the app directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 
-from app.database.session import PostgresSessionFactory
-from app.database.models import (
+from cims.database.session import PostgresSessionFactory
+from cims.database.models import (
     CandidateDB, ProjectDB, NomineeDB, CustomerDB, 
     HeadhunterDB, LevelDB, ExpertiseDB, FieldDB, AreaDB
 )
-from app.config import settings
+from cims.config import settings
 import bcrypt
 
 # Initialize Faker
