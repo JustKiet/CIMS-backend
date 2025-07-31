@@ -13,6 +13,17 @@ class LevelRepository(ABC):
         :rtype: Level
         """
         pass
+
+    @abstractmethod
+    def get_levels_by_ids(self, level_ids: list[int]) -> list[Level]:
+        """
+        Retrieve levels by their IDs.
+
+        :param list[int] level_ids: The list of level IDs to retrieve.
+        :return: A list of level entities.
+        :rtype: list[Level]
+        """
+        pass
     
     @abstractmethod
     def get_level_by_id(self, level_id: int) -> Optional[Level]:

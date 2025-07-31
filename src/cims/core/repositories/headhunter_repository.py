@@ -13,6 +13,27 @@ class HeadhunterRepository(ABC):
         :rtype: Headhunter
         """
         pass
+
+    @abstractmethod
+    def count_all_headhunters(self) -> int:
+        """
+        Count the total number of headhunters in the repository.
+
+        :return: The total number of headhunters.
+        :rtype: int
+        """
+        pass
+
+    @abstractmethod
+    def get_headhunters_by_ids(self, headhunter_ids: list[int]) -> list[Headhunter]:
+        """
+        Retrieve headhunters by their IDs.
+
+        :param list[int] headhunter_ids: A list of headhunter IDs to retrieve.
+        :return: A list of Headhunter entities corresponding to the provided IDs.
+        :rtype: list[Headhunter]
+        """
+        pass
     
     @abstractmethod
     def get_headhunter_by_id(self, headhunter_id: int) -> Optional[Headhunter]:

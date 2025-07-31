@@ -24,6 +24,17 @@ class CustomerRepository(ABC):
         :rtype: Optional[int]
         """
         pass
+
+    @abstractmethod
+    def get_customers_by_ids(self, customer_ids: list[int]) -> list[Customer]:
+        """
+        Retrieve customers by their IDs.
+
+        :param list[int] customer_ids: The list of customer IDs to retrieve.
+        :return: A list of customer entities.
+        :rtype: list[Customer]
+        """
+        pass
     
     @abstractmethod
     def get_customer_by_id(self, customer_id: int) -> Optional[Customer]:

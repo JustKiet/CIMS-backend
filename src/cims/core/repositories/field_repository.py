@@ -24,6 +24,17 @@ class FieldRepository(ABC):
         :rtype: Optional[int]
         """
         pass
+
+    @abstractmethod
+    def get_fields_by_ids(self, field_ids: list[int]) -> list[Field]:
+        """
+        Retrieve fields by their IDs.
+
+        :param list[int] field_ids: A list of field IDs to retrieve.
+        :return: A list of Field entities corresponding to the provided IDs.
+        :rtype: list[Field]
+        """
+        pass
     
     @abstractmethod
     def get_field_by_id(self, field_id: int) -> Optional[Field]:

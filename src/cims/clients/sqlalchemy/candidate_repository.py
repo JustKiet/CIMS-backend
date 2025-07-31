@@ -1,7 +1,7 @@
 from cims.core.entities.candidate import Candidate
 from cims.core.repositories.candidate_repository import CandidateRepository
 from cims.core.exceptions import NotFoundError
-from cims.database.models import CandidateDB
+from cims.database.models import CandidateDB, ExpertiseDB, FieldDB, LevelDB, AreaDB, HeadhunterDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -37,6 +37,9 @@ class SQLAlchemyCandidateRepository(CandidateRepository):
         self.db_session.refresh(new_candidate)
         return self._to_domain_entity(new_candidate)
     
+    def count_all_candidates(self) -> int:
+        return self.db_session.query(CandidateDB).count()
+    
     def get_all_candidates(self, limit: int = 100, offset: int = 0) -> list[Candidate]:
         db_candidates = self.db_session.query(CandidateDB).offset(offset).limit(limit).all()
         return [self._to_domain_entity(candidate) for candidate in db_candidates]
@@ -54,11 +57,67 @@ class SQLAlchemyCandidateRepository(CandidateRepository):
             .all()
         )
         return [self._to_domain_entity(candidate) for candidate in db_candidates]
+    
+    def search_candidates_with_filters(
+        self,
+        name: Optional[str] = None,
+        expertise_id: Optional[int] = None,
+        field_id: Optional[int] = None,
+        area_id: Optional[int] = None,
+        level_id: Optional[int] = None,
+        limit: int = 100,
+        offset: int = 0
+    ) -> list[Candidate]:
+        query = self.db_session.query(CandidateDB)
+        
+        if name:
+            query = query.filter(CandidateDB.name.ilike(f"%{name}%"))
+        if expertise_id:
+            query = query.filter(CandidateDB.expertise_id == expertise_id)
+        if field_id:
+            query = query.filter(CandidateDB.field_id == field_id)
+        if area_id:
+            query = query.filter(CandidateDB.area_id == area_id)
+        if level_id:
+            query = query.filter(CandidateDB.level_id == level_id)
+
+        db_candidates = query.offset(offset).limit(limit).all()
+        return [self._to_domain_entity(candidate) for candidate in db_candidates]
+    
+    def count_candidates_with_filters(
+        self,
+        name: Optional[str] = None,
+        expertise_id: Optional[int] = None,
+        field_id: Optional[int] = None,
+        area_id: Optional[int] = None,
+        level_id: Optional[int] = None,
+    ) -> int:
+        query = self.db_session.query(CandidateDB)
+        
+        if name:
+            query = query.filter(CandidateDB.name.ilike(f"%{name}%"))
+        if expertise_id:
+            query = query.filter(CandidateDB.expertise_id == expertise_id)
+        if field_id:
+            query = query.filter(CandidateDB.field_id == field_id)
+        if area_id:
+            query = query.filter(CandidateDB.area_id == area_id)
+        if level_id:
+            query = query.filter(CandidateDB.level_id == level_id)
+
+        return query.count()
+    
+    def get_candidates_by_ids(self, candidate_ids: list[int]) -> list[Candidate]:
+        if not candidate_ids:
+            return []
+        
+        db_candidates = self.db_session.query(CandidateDB).filter(CandidateDB.candidate_id.in_(candidate_ids)).all()
+        return [self._to_domain_entity(candidate) for candidate in db_candidates]
 
     def get_candidate_by_id(self, candidate_id: int) -> Optional[Candidate]:
         if not candidate_id:
-            raise ValueError("Candidate ID must be provided.")
-        
+            return None
+
         db_obj = self.db_session.get(CandidateDB, candidate_id)
         if not db_obj:
             return None

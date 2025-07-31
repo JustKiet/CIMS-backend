@@ -46,6 +46,11 @@ class CandidateUpdate(BaseModel):
 class CandidateResponse(CandidateBase):
     """Schema for candidate response."""
     candidate_id: int = Field(..., description="Unique candidate ID")
+    expertise_name: Optional[str] = Field(None, description="Name of the expertise area")
+    field_name: Optional[str] = Field(None, description="Name of the field")
+    area_name: Optional[str] = Field(None, description="Name of the area")
+    level_name: Optional[str] = Field(None, description="Name of the level")
+    headhunter_name: Optional[str] = Field(None, description="Name of the assigned headhunter")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 

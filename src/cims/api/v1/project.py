@@ -1,9 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from datetime import date, datetime
 from cims.core.repositories.project_repository import ProjectRepository
+from cims.core.repositories.customer_repository import CustomerRepository
+from cims.core.repositories.expertise_repository import ExpertiseRepository
+from cims.core.repositories.area_repository import AreaRepository
+from cims.core.repositories.level_repository import LevelRepository
 from cims.core.entities.project import Project
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_project_repository
+from cims.deps import (
+    get_project_repository,
+    get_customer_repository,
+    get_expertise_repository,
+    get_area_repository,
+    get_level_repository
+)
 from cims.schemas import (
     ProjectCreate,
     ProjectUpdate,
@@ -33,24 +43,38 @@ router = APIRouter(
 async def create_project(
     project_data: ProjectCreate,
     project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
 ):
     """Create a new project."""
     try:
+        customer_name = customer_repo.get_customer_by_id(project_data.customer_id)
+
+        if not customer_name:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        expertise_name = expertise_repo.get_expertise_by_id(project_data.expertise_id)
+
+        if not expertise_name:
+            raise HTTPException(status_code=404, detail="Expertise not found")
+        
+        project_name = f"[{customer_name.name}] {expertise_name.name}"
+        
         project = Project(
             project_id=None,
-            name=project_data.name,
-            start_date=project_data.start_date or date.today(),
-            end_date=project_data.end_date or date.today(),
-            budget=project_data.budget or 0.0,
-            budget_currency="USD",  # Default currency
-            type="CODINH",  # Default project type
-            required_recruits=1,  # Default required recruits
-            recruited=0,  # Default recruited count
-            status="TIMKIEMUNGVIEN",  # Default status
+            name=project_name,
+            start_date=project_data.start_date,
+            end_date=project_data.end_date,
+            budget=project_data.budget,
+            budget_currency=project_data.budget_currency,
+            type=project_data.type,
+            required_recruits=project_data.required_recruits,
+            recruited=project_data.recruited,
+            status=project_data.status,
             customer_id=project_data.customer_id,
-            expertise_id=1,  # Default expertise_id, should be passed from client
-            area_id=1,  # Default area_id, should be passed from client
-            level_id=1,  # Default level_id, should be passed from client
+            expertise_id=project_data.expertise_id,
+            area_id=project_data.area_id,
+            level_id=project_data.level_id,
             created_at=None,
             updated_at=None
         )
@@ -75,16 +99,46 @@ async def create_project(
 async def get_projects(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    project_repo: ProjectRepository = Depends(get_project_repository)
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Get all projects with pagination."""
     try:
         offset = (page - 1) * page_size
         projects = project_repo.get_all_projects(limit=page_size, offset=offset)
+        total = project_repo.count_all_projects()
         
         project_responses = [entity_to_response_model(project, ProjectResponse) for project in projects]
-        total = len(projects)
-        
+
+        if project_responses:
+            # Step 1: Collect all unique IDs
+            customer_ids = {p.customer_id for p in project_responses}
+            expertise_ids = {p.expertise_id for p in project_responses}
+            area_ids = {p.area_id for p in project_responses}
+            level_ids = {p.level_id for p in project_responses}
+
+            # Step 2: Fetch all needed data in bulk
+            customers = customer_repo.get_customers_by_ids(list(customer_ids))
+            expertises = expertise_repo.get_expertises_by_ids(list(expertise_ids))
+            areas = area_repo.get_areas_by_ids(list(area_ids))
+            levels = level_repo.get_levels_by_ids(list(level_ids))
+
+            # Step 3: Build lookup dictionaries
+            customer_map = {c.customer_id: c.name for c in customers}
+            expertise_map = {e.expertise_id: e.name for e in expertises}
+            area_map = {a.area_id: a.name for a in areas}
+            level_map = {l.level_id: l.name for l in levels}
+
+            # Step 4: Map names onto project_responses
+            for project_response in project_responses:
+                project_response.customer_name = customer_map[project_response.customer_id]
+                project_response.expertise_name = expertise_map[project_response.expertise_id]
+                project_response.area_name = area_map[project_response.area_id]
+                project_response.level_name = level_map[project_response.level_id]
+
         return create_list_response(
             data=project_responses,
             total=total,
@@ -99,26 +153,56 @@ async def get_projects(
 @router.get("/search",
     response_model=ProjectListResponse,
     summary="Search projects",
-    description="Search projects by name with pagination"
+    description="Search projects by name, customer, or expertise with pagination"
 )
 async def search_projects(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    project_repo: ProjectRepository = Depends(get_project_repository)
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
-    """Search projects by name."""
+    """Search projects by name, customer name, or expertise name."""
     try:
         offset = (page - 1) * page_size
-        projects = project_repo.search_projects_by_name(
-            name_query=query,
+        projects = project_repo.search_projects_comprehensive(
+            query=query,
             limit=page_size,
             offset=offset
         )
+        total = project_repo.count_projects_comprehensive(query)
         
         project_responses = [entity_to_response_model(project, ProjectResponse) for project in projects]
-        total = len(projects)
         
+        if project_responses:
+            # Step 1: Collect all unique IDs
+            customer_ids = {p.customer_id for p in project_responses}
+            expertise_ids = {p.expertise_id for p in project_responses}
+            area_ids = {p.area_id for p in project_responses}
+            level_ids = {p.level_id for p in project_responses}
+
+            # Step 2: Fetch all needed data in bulk
+            customers = customer_repo.get_customers_by_ids(list(customer_ids))
+            expertises = expertise_repo.get_expertises_by_ids(list(expertise_ids))
+            areas = area_repo.get_areas_by_ids(list(area_ids))
+            levels = level_repo.get_levels_by_ids(list(level_ids))
+
+            # Step 3: Build lookup dictionaries
+            customer_map = {c.customer_id: c.name for c in customers}
+            expertise_map = {e.expertise_id: e.name for e in expertises}
+            area_map = {a.area_id: a.name for a in areas}
+            level_map = {l.level_id: l.name for l in levels}
+
+            # Step 4: Map names onto project_responses
+            for project_response in project_responses:
+                project_response.customer_name = customer_map[project_response.customer_id]
+                project_response.expertise_name = expertise_map[project_response.expertise_id]
+                project_response.area_name = area_map[project_response.area_id]
+                project_response.level_name = level_map[project_response.level_id]
+
         return create_list_response(
             data=project_responses,
             total=total,

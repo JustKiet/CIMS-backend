@@ -221,9 +221,10 @@ class MockDataInjector:
             for _ in range(num_projects):
                 start_date = fake.date_between(start_date="-1y", end_date="today")
                 end_date = fake.date_between(start_date=start_date, end_date="+6m")
-                
+                expertise = random.choice(expertises)
+
                 project = ProjectDB(
-                    name=f"{fake.catch_phrase()} Project",
+                    name=f"[{customer.name}] {expertise.name}",
                     start_date=start_date,
                     end_date=end_date,
                     budget=round(random.uniform(50000, 500000), 2),
@@ -233,7 +234,7 @@ class MockDataInjector:
                     recruited=random.randint(0, 10),
                     status=random.choice(statuses),
                     customer_id=customer.customer_id,
-                    expertise_id=random.choice(expertises).expertise_id,
+                    expertise_id=expertise.expertise_id,
                     area_id=random.choice(areas).area_id,
                     level_id=random.choice(levels).level_id
                 )

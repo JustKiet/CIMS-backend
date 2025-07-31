@@ -28,10 +28,17 @@ class SQLAlchemyCustomerRepository(CustomerRepository):
         self.db_session.commit()
         self.db_session.refresh(new_customer)
         return self._to_domain_entity(new_customer)
+    
+    def get_customers_by_ids(self, customer_ids: list[int]) -> list[Customer]:
+        if not customer_ids:
+            return []
+        
+        db_customers = self.db_session.query(CustomerDB).filter(CustomerDB.customer_id.in_(customer_ids)).all()
+        return [self._to_domain_entity(customer) for customer in db_customers]
 
     def get_customer_by_id(self, customer_id: int) -> Optional[Customer]:
         if not customer_id:
-            raise ValueError("Customer ID must be provided.")
+            return None
         
         db_obj = self.db_session.get(CustomerDB, customer_id)
         if not db_obj:

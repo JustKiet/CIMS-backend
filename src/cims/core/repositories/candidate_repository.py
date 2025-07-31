@@ -15,6 +15,16 @@ class CandidateRepository(ABC):
         pass
 
     @abstractmethod
+    def count_all_candidates(self) -> int:
+        """
+        Count the total number of candidates in the repository.
+
+        :return: The total number of candidates.
+        :rtype: int
+        """
+        pass
+
+    @abstractmethod
     def get_all_candidates(self, limit: int = 100, offset: int = 0) -> list[Candidate]:
         """
         Retrieve all candidates from the repository with pagination.
@@ -46,6 +56,65 @@ class CandidateRepository(ABC):
         :param int limit: The maximum number of candidates to return.
         :param int offset: The number of candidates to skip.
         :return: A list of matching candidate entities.
+        :rtype: list[Candidate]
+        """
+        pass
+
+    @abstractmethod
+    def search_candidates_with_filters(
+        self,
+        name: Optional[str] = None,
+        expertise_id: Optional[int] = None,
+        field_id: Optional[int] = None,
+        area_id: Optional[int] = None,
+        level_id: Optional[int] = None,
+        limit: int = 100,
+        offset: int = 0
+    ) -> list[Candidate]:
+        """
+        Search candidates with various filters.
+
+        :param str name: The name to filter candidates by.
+        :param int expertise_id: The expertise ID to filter candidates by.
+        :param int field_id: The field ID to filter candidates by.
+        :param int area_id: The area ID to filter candidates by.
+        :param int level_id: The level ID to filter candidates by.
+        :param int limit: The maximum number of candidates to return.
+        :param int offset: The number of candidates to skip.
+        :return: A list of candidate entities matching the filters.
+        :rtype: list[Candidate]
+        """
+        pass
+
+    @abstractmethod
+    def count_candidates_with_filters(
+        self,
+        name: Optional[str] = None,
+        expertise_id: Optional[int] = None,
+        field_id: Optional[int] = None,
+        area_id: Optional[int] = None,
+        level_id: Optional[int] = None,
+    ) -> int:
+        """
+        Count candidates with various filters.
+
+        :param str name: The name to filter candidates by.
+        :param int expertise_id: The expertise ID to filter candidates by.
+        :param int field_id: The field ID to filter candidates by.
+        :param int area_id: The area ID to filter candidates by.
+        :param int level_id: The level ID to filter candidates by.
+        :return: The count of candidates matching the filters.
+        :rtype: int
+        """
+        pass
+
+    @abstractmethod
+    def get_candidates_by_ids(self, candidate_ids: list[int]) -> list[Candidate]:
+        """
+        Retrieve candidates by their IDs.
+
+        :param list[int] candidate_ids: A list of candidate IDs to retrieve.
+        :return: A list of Candidate entities corresponding to the provided IDs.
         :rtype: list[Candidate]
         """
         pass

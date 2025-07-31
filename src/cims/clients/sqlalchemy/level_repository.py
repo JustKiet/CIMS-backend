@@ -23,10 +23,17 @@ class SQLAlchemyLevelRepository(LevelRepository):
         self.db_session.commit()
         self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
+    
+    def get_levels_by_ids(self, level_ids: list[int]) -> list[Level]:
+        if not level_ids:
+            return []
+        
+        db_levels = self.db_session.query(LevelDB).filter(LevelDB.level_id.in_(level_ids)).all()
+        return [self._to_domain_entity(level) for level in db_levels]
 
     def get_level_by_id(self, level_id: int) -> Optional[Level]:
         if not level_id:
-            raise ValueError("Level ID must be provided.")
+            return None
         
         db_obj = self.db_session.get(LevelDB, level_id)
         if not db_obj:

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
 from cims.core.repositories.headhunter_repository import HeadhunterRepository
+from cims.core.repositories.area_repository import AreaRepository
 from cims.core.entities.headhunter import Headhunter
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_headhunter_repository
+from cims.deps import get_headhunter_repository, get_area_repository
 from cims.schemas import (
     HeadhunterCreate,
     HeadhunterUpdate,
@@ -68,16 +69,26 @@ async def create_headhunter(
 async def get_headhunters(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
+    area_repo: AreaRepository = Depends(get_area_repository)
 ):
     """Get all headhunters with pagination."""
     try:
         offset = (page - 1) * page_size
         headhunters = headhunter_repo.get_all_headhunters(limit=page_size, offset=offset)
-        
+        total = headhunter_repo.count_all_headhunters()
+
         headhunter_responses = [entity_to_response_model(headhunter, HeadhunterResponse) for headhunter in headhunters]
-        total = len(headhunters)
         
+        if headhunter_responses:
+            # Enrich headhunter responses with area names
+            area_ids = {headhunter.area_id for headhunter in headhunters if headhunter.area_id}
+            areas = area_repo.get_areas_by_ids(list(area_ids))
+            area_map = {area.area_id: area.name for area in areas}
+            
+            for response in headhunter_responses:
+                response.area_name = area_map.get(response.area_id, "Unknown Area")
+            
         return create_list_response(
             data=headhunter_responses,
             total=total,

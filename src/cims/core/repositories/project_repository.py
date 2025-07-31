@@ -13,6 +13,17 @@ class ProjectRepository(ABC):
         :rtype: Project
         """
         pass
+
+    @abstractmethod
+    def get_projects_by_ids(self, project_ids: list[int]) -> list[Project]:
+        """
+        Retrieve projects by their IDs.
+
+        :param list[int] project_ids: The list of project IDs to retrieve.
+        :return: A list of project entities.
+        :rtype: list[Project]
+        """
+        pass
     
     @abstractmethod
     def get_project_by_id(self, project_id: int) -> Optional[Project]:
@@ -71,5 +82,39 @@ class ProjectRepository(ABC):
         :param int offset: The number of projects to skip.
         :return: A list of matching project entities.
         :rtype: list[Project]
+        """
+        pass
+
+    @abstractmethod
+    def search_projects_comprehensive(self, query: str, limit: int = 100, offset: int = 0) -> list[Project]:
+        """
+        Search projects by name, customer name, or expertise name using a partial match.
+
+        :param str query: The search query to match against project name, customer name, or expertise name.
+        :param int limit: The maximum number of projects to return.
+        :param int offset: The number of projects to skip.
+        :return: A list of matching project entities.
+        :rtype: list[Project]
+        """
+        pass
+
+    @abstractmethod
+    def count_all_projects(self) -> int:
+        """
+        Count the total number of projects in the repository.
+
+        :return: Total count of projects.
+        :rtype: int
+        """
+        pass
+
+    @abstractmethod
+    def count_projects_comprehensive(self, query: str) -> int:
+        """
+        Count projects matching the comprehensive search query.
+
+        :param str query: The search query to match against project name, customer name, or expertise name.
+        :return: Count of matching projects.
+        :rtype: int
         """
         pass

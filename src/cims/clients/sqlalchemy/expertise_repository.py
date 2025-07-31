@@ -23,11 +23,18 @@ class SQLAlchemyExpertiseRepository(ExpertiseRepository):
         self.db_session.commit()
         self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
+    
+    def get_expertises_by_ids(self, expertise_ids: list[int]) -> list[Expertise]:
+        if not expertise_ids:
+            return []
+        
+        db_expertises = self.db_session.query(ExpertiseDB).filter(ExpertiseDB.expertise_id.in_(expertise_ids)).all()
+        return [self._to_domain_entity(expertise) for expertise in db_expertises]
 
     def get_expertise_by_id(self, expertise_id: int) -> Optional[Expertise]:
         if not expertise_id:
-            raise ValueError("Expertise ID must be provided.")
-        
+            return None
+
         db_obj = self.db_session.get(ExpertiseDB, expertise_id)
         if not db_obj:
             return None

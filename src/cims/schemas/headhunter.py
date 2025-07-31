@@ -34,6 +34,7 @@ class HeadhunterPasswordUpdate(BaseModel):
 class HeadhunterResponse(HeadhunterBase):
     """Schema for headhunter response."""
     headhunter_id: int = Field(..., description="Unique headhunter ID")
+    area_name: Optional[str] = Field(None, description="Name of the area")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 

@@ -34,11 +34,21 @@ class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
         self.db_session.commit()
         self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
+    
+    def count_all_headhunters(self) -> int:
+        return self.db_session.query(HeadhunterDB).count()
+    
+    def get_headhunters_by_ids(self, headhunter_ids: list[int]) -> list[Headhunter]:
+        if not headhunter_ids:
+            return []
+        
+        db_headhunters = self.db_session.query(HeadhunterDB).filter(HeadhunterDB.headhunter_id.in_(headhunter_ids)).all()
+        return [self._to_domain_entity(headhunter) for headhunter in db_headhunters]
 
     def get_headhunter_by_id(self, headhunter_id: int) -> Optional[Headhunter]:
         if not headhunter_id:
-            raise ValueError("Headhunter ID must be provided.")
-        
+            return None
+
         db_obj = self.db_session.get(HeadhunterDB, headhunter_id)
         if not db_obj:
             return None

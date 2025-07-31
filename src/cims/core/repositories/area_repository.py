@@ -49,6 +49,17 @@ class AreaRepository(ABC):
         :rtype: Optional[int]
         """
         pass
+
+    @abstractmethod
+    def get_areas_by_ids(self, area_ids: list[int]) -> list[Area]:
+        """
+        Retrieve areas by their IDs.
+
+        :param list[int] area_ids: A list of area IDs to retrieve.
+        :return: A list of Area entities corresponding to the provided IDs.
+        :rtype: list[Area]
+        """
+        pass
     
     @abstractmethod
     def get_area_by_id(self, area_id: int) -> Optional[Area]:

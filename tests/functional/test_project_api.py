@@ -16,10 +16,18 @@ class TestProjectAPI:
             "name": "Test Project",
             "customer_id": 1,
             "description": "A test project for API validation",
-            "status": "ACTIVE",
+            "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "budget": 100000.0
+            "budget": 100000.0,
+            "budget_currency": "USD",
+            "type": "CODINH",
+            "required_recruits": 1,
+            "recruited": 0,
+            "customer_id": 1,
+            "expertise_id": 1,
+            "area_id": 1,
+            "level_id": 1,
         }
         
         response = client.post("/api/v1/projects/", json=project_data)
@@ -48,10 +56,18 @@ class TestProjectAPI:
                 "name": f"Test Project {i}",
                 "customer_id": 1,
                 "description": f"Test project {i}",
-                "status": "ACTIVE",
+                "status": "TIMKIEMUNGVIEN",
                 "start_date": "2024-01-01",
                 "end_date": "2024-12-31",
-                "budget": 50000.0 + i * 10000
+                "budget": 50000.0 + i * 10000,
+                "budget_currency": "USD",
+                "type": "CODINH",
+                "required_recruits": 1,
+                "recruited": 0,
+                "customer_id": 1,
+                "expertise_id": 1,
+                "area_id": 1,
+                "level_id": 1,
             }
             client.post("/api/v1/projects/", json=project_data)
         
@@ -70,10 +86,18 @@ class TestProjectAPI:
             "name": "Searchable Project",
             "customer_id": 1,
             "description": "A searchable project",
-            "status": "ACTIVE",
+            "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "budget": 75000.0
+            "budget": 75000.0,
+            "budget_currency": "USD",
+            "type": "CODINH",
+            "required_recruits": 1,
+            "recruited": 0,
+            "customer_id": 1,
+            "expertise_id": 1,
+            "area_id": 1,
+            "level_id": 1,
         }
         client.post("/api/v1/projects/", json=project_data)
         
@@ -91,10 +115,18 @@ class TestProjectAPI:
             "name": "Get Project Test",
             "customer_id": 1,
             "description": "Test getting project",
-            "status": "ACTIVE",
+            "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "budget": 80000.0
+            "budget": 80000.0,
+            "budget_currency": "USD",
+            "type": "CODINH",
+            "required_recruits": 1,
+            "recruited": 0,
+            "customer_id": 1,
+            "expertise_id": 1,
+            "area_id": 1,
+            "level_id": 1,
         }
         create_response = client.post("/api/v1/projects/", json=project_data)
         created_project: dict[str, Any] = create_response.json()["data"]
@@ -123,10 +155,18 @@ class TestProjectAPI:
             "name": "Update Project Test",
             "customer_id": 1,
             "description": "Test updating project",
-            "status": "ACTIVE",
+            "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "budget": 90000.0
+            "budget": 90000.0,
+            "budget_currency": "USD",
+            "type": "CODINH",
+            "required_recruits": 1,
+            "recruited": 0,
+            "customer_id": 1,
+            "expertise_id": 1,
+            "area_id": 1,
+            "level_id": 1,
         }
         create_response = client.post("/api/v1/projects/", json=project_data)
         created_project: dict[str, Any] = create_response.json()["data"]
@@ -158,10 +198,18 @@ class TestProjectAPI:
             "name": "Delete Project Test",
             "customer_id": 1,
             "description": "Test deleting project",
-            "status": "ACTIVE",
+            "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
             "end_date": "2024-12-31",
-            "budget": 85000.0
+            "budget": 85000.0,
+            "budget_currency": "USD",
+            "type": "CODINH",
+            "required_recruits": 1,
+            "recruited": 0,
+            "customer_id": 1,
+            "expertise_id": 1,
+            "area_id": 1,
+            "level_id": 1,
         }
         create_response = client.post("/api/v1/projects/", json=project_data)
         created_project: dict[str, Any] = create_response.json()["data"]

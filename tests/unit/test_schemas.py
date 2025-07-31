@@ -73,10 +73,17 @@ class TestSchemaValidation:
             name="Test Project",
             customer_id=1,
             description="Test description",
-            status="ACTIVE",
+            status="TIMKIEMUNGVIEN",
             start_date=date(2024, 1, 1),
             end_date=date(2024, 12, 31),
-            budget=100000.0
+            budget=100000.0,
+            budget_currency="USD",
+            type="CODINH",
+            required_recruits=1,
+            recruited=0,
+            expertise_id=1,
+            area_id=1,
+            level_id=1,
         )
         assert project_data.name == "Test Project"
         assert project_data.customer_id == 1
@@ -89,10 +96,17 @@ class TestSchemaValidation:
                 name="Test Project",
                 customer_id=1,
                 description="Test description",
-                status="ACTIVE",
+                status="TIMKIEMUNGVIEN",
                 start_date=date(2024, 1, 1),
                 end_date=date(2024, 12, 31),
-                budget=-1000.0  # Negative budget
+                budget=-1000.0,  # Negative budget
+                budget_currency="USD",
+                type="CODINH",
+                required_recruits=1,
+                recruited=0,
+                expertise_id=1,
+                area_id=1,
+                level_id=1,
             )
 
 class TestSchemaUtils:

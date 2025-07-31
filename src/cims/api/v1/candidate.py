@@ -1,9 +1,23 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import Optional
 import datetime
+
 from cims.core.repositories.candidate_repository import CandidateRepository
+from cims.core.repositories.expertise_repository import ExpertiseRepository
+from cims.core.repositories.field_repository import FieldRepository
+from cims.core.repositories.area_repository import AreaRepository
+from cims.core.repositories.level_repository import LevelRepository
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
 from cims.core.entities.candidate import Candidate
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_candidate_repository
+from cims.deps import (
+    get_candidate_repository,
+    get_expertise_repository,
+    get_field_repository,
+    get_area_repository,
+    get_level_repository,
+    get_headhunter_repository
+)
 from cims.schemas import (
     CandidateCreate,
     CandidateUpdate,
@@ -75,16 +89,47 @@ async def create_candidate(
 async def get_candidates(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository)
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    field_repo: FieldRepository = Depends(get_field_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get all candidates with pagination."""
     try:
         offset = (page - 1) * page_size
         candidates = candidate_repo.get_all_candidates(limit=page_size, offset=offset)
-        
+        total = candidate_repo.count_all_candidates()
+
         candidate_responses = [entity_to_response_model(candidate, CandidateResponse) for candidate in candidates]
-        total = len(candidates)
-        
+
+        if candidate_responses:
+            expertise_ids = {c.expertise_id for c in candidates}
+            field_ids = {c.field_id for c in candidates}
+            area_ids = {c.area_id for c in candidates}
+            level_ids = {c.level_id for c in candidates}
+            headhunter_ids = {c.headhunter_id for c in candidates}
+
+            expertises = expertise_repo.get_expertises_by_ids(list(expertise_ids))
+            fields = field_repo.get_fields_by_ids(list(field_ids))
+            areas = area_repo.get_areas_by_ids(list(area_ids))
+            levels = level_repo.get_levels_by_ids(list(level_ids))
+            headhunters = headhunter_repo.get_headhunters_by_ids(list(headhunter_ids))
+
+            expertise_map = {e.expertise_id: e.name for e in expertises}
+            field_map = {f.field_id: f.name for f in fields}
+            area_map = {a.area_id: a.name for a in areas}
+            level_map = {l.level_id: l.name for l in levels}
+            headhunter_map = {h.headhunter_id: h.name for h in headhunters}
+
+            for candidate_response in candidate_responses:
+                candidate_response.expertise_name = expertise_map.get(candidate_response.expertise_id)
+                candidate_response.field_name = field_map.get(candidate_response.field_id)
+                candidate_response.area_name = area_map.get(candidate_response.area_id)
+                candidate_response.level_name = level_map.get(candidate_response.level_id)
+                candidate_response.headhunter_name = headhunter_map.get(candidate_response.headhunter_id)
+
         return create_list_response(
             data=candidate_responses,
             total=total,
@@ -102,29 +147,96 @@ async def get_candidates(
     description="Search candidates by name with pagination"
 )
 async def search_candidates(
-    query: str = Query(..., min_length=1, description="Search query"),
+    query: str = Query("", description="Search query"),
+    expertise_id: Optional[int] = Query(None, description="Expertise ID filter"),
+    field_id: Optional[int] = Query(None, description="Field ID filter"),
+    area_id: Optional[int] = Query(None, description="Area ID filter"),
+    level_id: Optional[int] = Query(None, description="Level ID filter"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository)
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    field_repo: FieldRepository = Depends(get_field_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
-    """Search candidates by name."""
+    """Search candidates by name and/or filters."""
     try:
+        # Validate that at least one search criteria is provided
+        has_query = query and query.strip()
+        has_filters = any([expertise_id, field_id, area_id, level_id])
+        
+        if not has_query and not has_filters:
+            raise HTTPException(
+                status_code=400, 
+                detail="At least one search criteria must be provided (query or filters)"
+            )
+        
+        # Use None for empty query to ensure repository filtering works correctly
+        search_name = query.strip() if (query and query.strip()) else None
+        
         offset = (page - 1) * page_size
-        candidates = candidate_repo.search_candidates_by_name(
-            name_query=query,
+        candidates = candidate_repo.search_candidates_with_filters(
+            name=search_name,
+            expertise_id=expertise_id,
+            field_id=field_id,
+            area_id=area_id,
+            level_id=level_id,
             limit=page_size,
             offset=offset
         )
-        
+
+        total = candidate_repo.count_candidates_with_filters(
+            name=search_name,
+            expertise_id=expertise_id,
+            field_id=field_id,
+            area_id=area_id,
+            level_id=level_id,
+        )
+
         candidate_responses = [entity_to_response_model(candidate, CandidateResponse) for candidate in candidates]
-        total = len(candidates)
+        
+        if candidate_responses:
+            expertise_ids = {c.expertise_id for c in candidates}
+            field_ids = {c.field_id for c in candidates}
+            area_ids = {c.area_id for c in candidates}
+            level_ids = {c.level_id for c in candidates}
+            headhunter_ids = {c.headhunter_id for c in candidates}
+
+            expertises = expertise_repo.get_expertises_by_ids(list(expertise_ids))
+            fields = field_repo.get_fields_by_ids(list(field_ids))
+            areas = area_repo.get_areas_by_ids(list(area_ids))
+            levels = level_repo.get_levels_by_ids(list(level_ids))
+            headhunters = headhunter_repo.get_headhunters_by_ids(list(headhunter_ids))
+
+            expertise_map = {e.expertise_id: e.name for e in expertises}
+            field_map = {f.field_id: f.name for f in fields}
+            area_map = {a.area_id: a.name for a in areas}
+            level_map = {l.level_id: l.name for l in levels}
+            headhunter_map = {h.headhunter_id: h.name for h in headhunters}
+
+            for candidate_response in candidate_responses:
+                candidate_response.expertise_name = expertise_map.get(candidate_response.expertise_id)
+                candidate_response.field_name = field_map.get(candidate_response.field_id)
+                candidate_response.area_name = area_map.get(candidate_response.area_id)
+                candidate_response.level_name = level_map.get(candidate_response.level_id)
+                candidate_response.headhunter_name = headhunter_map.get(candidate_response.headhunter_id)
+        
+        search_description = []
+        if search_name:
+            search_description.append(f"query '{search_name}'")
+        if any([expertise_id, field_id, area_id, level_id]):
+            search_description.append("filters")
+        
+        message = f"Found {total} candidates matching {' and '.join(search_description)}"
         
         return create_list_response(
             data=candidate_responses,
             total=total,
             page=page,
             page_size=page_size,
-            message=f"Found {total} candidates matching '{query}'"
+            message=message
         )
         
     except Exception as e:

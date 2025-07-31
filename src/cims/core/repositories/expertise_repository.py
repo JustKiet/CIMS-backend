@@ -13,6 +13,17 @@ class ExpertiseRepository(ABC):
         :rtype: Expertise
         """
         pass
+
+    @abstractmethod
+    def get_expertises_by_ids(self, expertise_ids: list[int]) -> list[Expertise]:
+        """
+        Retrieve expertises by their IDs.
+
+        :param list[int] expertise_ids: The list of expertise IDs to retrieve.
+        :return: A list of expertise entities.
+        :rtype: list[Expertise]
+        """
+        pass
     
     @abstractmethod
     def get_expertise_by_id(self, expertise_id: int) -> Optional[Expertise]:

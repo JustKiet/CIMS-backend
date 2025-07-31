@@ -30,7 +30,7 @@ class Authenticator:
 
     def create_access_token(self, data: dict[str, Any]):
         to_encode = data.copy()
-        expire = datetime.datetime.now(datetime.timezone.utc) + (self._ACCESS_TOKEN_EXPIRE_MINUTES * datetime.timedelta(minutes=1))
+        expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=self._ACCESS_TOKEN_EXPIRE_MINUTES)
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, self._SECRET_KEY, algorithm=self._ALGORITHM)
 

@@ -1,7 +1,7 @@
 from cims.core.entities.project import Project
 from cims.core.repositories.project_repository import ProjectRepository
 from cims.core.exceptions import NotFoundError
-from cims.database.models import ProjectDB
+from cims.database.models import CustomerDB, ExpertiseDB, ProjectDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -37,11 +37,18 @@ class SQLAlchemyProjectRepository(ProjectRepository):
         self.db_session.commit()
         self.db_session.refresh(new_project)
         return self._to_domain_entity(new_project)
+    
+    def get_projects_by_ids(self, project_ids: list[int]) -> list[Project]:
+        if not project_ids:
+            return []
+        
+        db_projects = self.db_session.query(ProjectDB).filter(ProjectDB.project_id.in_(project_ids)).all()
+        return [self._to_domain_entity(project) for project in db_projects]
 
     def get_project_by_id(self, project_id: int) -> Optional[Project]:
         if not project_id:
-            raise ValueError("Project ID must be provided.")
-        
+            return None
+
         db_obj = self.db_session.get(ProjectDB, project_id)
         if not db_obj:
             return None
@@ -87,3 +94,43 @@ class SQLAlchemyProjectRepository(ProjectRepository):
             .all()
         )
         return [self._to_domain_entity(project) for project in db_projects]
+
+    def search_projects_comprehensive(self, query: str, limit: int = 100, offset: int = 0) -> list[Project]:
+        """Search projects by project name, customer name, or expertise name."""
+        from cims.database.models import CustomerDB, ExpertiseDB
+        
+        db_projects = (
+            self.db_session.query(ProjectDB)
+            .join(CustomerDB, ProjectDB.customer_id == CustomerDB.customer_id)
+            .join(ExpertiseDB, ProjectDB.expertise_id == ExpertiseDB.expertise_id)
+            .filter(
+                # Search in project name, customer name, or expertise name
+                ProjectDB.name.ilike(f"%{query}%") |
+                CustomerDB.name.ilike(f"%{query}%") |
+                ExpertiseDB.name.ilike(f"%{query}%")
+            )
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(project) for project in db_projects]
+
+    def count_all_projects(self) -> int:
+        """Count the total number of projects."""
+        return self.db_session.query(ProjectDB).count()
+
+    def count_projects_comprehensive(self, query: str) -> int:
+        """Count projects matching the comprehensive search query."""
+        
+        return (
+            self.db_session.query(ProjectDB)
+            .join(CustomerDB, ProjectDB.customer_id == CustomerDB.customer_id)
+            .join(ExpertiseDB, ProjectDB.expertise_id == ExpertiseDB.expertise_id)
+            .filter(
+                # Search in project name, customer name, or expertise name
+                ProjectDB.name.ilike(f"%{query}%") |
+                CustomerDB.name.ilike(f"%{query}%") |
+                ExpertiseDB.name.ilike(f"%{query}%")
+            )
+            .count()
+        )

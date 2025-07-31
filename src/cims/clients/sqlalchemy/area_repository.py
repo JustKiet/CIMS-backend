@@ -45,6 +45,13 @@ class SQLAlchemyAreaRepository(AreaRepository):
         db_obj = self.db_session.query(AreaDB).filter(AreaDB.name == area_name).first()
         return db_obj.area_id if db_obj else None
 
+    def get_areas_by_ids(self, area_ids: list[int]) -> list[Area]:
+        if not area_ids:
+            return []
+        
+        db_areas = self.db_session.query(AreaDB).filter(AreaDB.area_id.in_(area_ids)).all()
+        return [self._to_domain_entity(area) for area in db_areas]
+
     def get_area_by_id(self, area_id: int) -> Optional[Area]:
         if not area_id:
             raise ValueError("Area ID must be provided.")

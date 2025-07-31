@@ -15,7 +15,7 @@ from cims.schemas.utils import entity_to_response_model
 from cims.config import CLogger
 from cims.deps import get_headhunter_repository, get_authenticator
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 logger = CLogger(__name__).get_logger()
 
@@ -96,12 +96,12 @@ async def login_headhunter(
 
         token = usecase.authenticate(form_data.username, form_data.password)
         
-        # Create enhanced token data
-        expires_at = datetime.now() + timedelta(minutes=30)  # Assuming 30 min expiry
+        # Create enhanced token data with proper expiration time
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=authenticator._ACCESS_TOKEN_EXPIRE_MINUTES)
         token_data = TokenData(
             access_token=token.access_token,
             token_type=token.token_type,
-            expires_in=1800,  # 30 minutes in seconds
+            expires_in=authenticator._ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # Convert minutes to seconds
             expires_at=expires_at
         )
 

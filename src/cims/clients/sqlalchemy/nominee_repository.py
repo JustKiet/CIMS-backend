@@ -30,11 +30,18 @@ class SQLAlchemyNomineeRepository(NomineeRepository):
         self.db_session.commit()
         self.db_session.refresh(new_nominee)
         return self._to_domain_entity(new_nominee)
+    
+    def get_nominees_by_ids(self, nominee_ids: list[int]) -> list[Nominee]:
+        if not nominee_ids:
+            return []
+        
+        db_nominees = self.db_session.query(NomineeDB).filter(NomineeDB.nominee_id.in_(nominee_ids)).all()
+        return [self._to_domain_entity(nominee) for nominee in db_nominees]
 
     def get_nominee_by_id(self, nominee_id: int) -> Optional[Nominee]:
         if not nominee_id:
-            raise ValueError("Nominee ID must be provided.")
-        
+            return None
+
         db_obj = self.db_session.get(NomineeDB, nominee_id)
         if not db_obj:
             return None

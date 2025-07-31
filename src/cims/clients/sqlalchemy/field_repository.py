@@ -23,10 +23,17 @@ class SQLAlchemyFieldRepository(FieldRepository):
         self.db_session.commit()
         self.db_session.refresh(db_obj)
         return self._to_domain_entity(db_obj)
+    
+    def get_fields_by_ids(self, field_ids: list[int]) -> list[Field]:
+        if not field_ids:
+            return []
+        
+        db_fields = self.db_session.query(FieldDB).filter(FieldDB.field_id.in_(field_ids)).all()
+        return [self._to_domain_entity(field) for field in db_fields]
 
     def get_field_by_id(self, field_id: int) -> Optional[Field]:
         if not field_id:
-            raise ValueError("Field ID must be provided.")
+            return None
         
         db_obj = self.db_session.get(FieldDB, field_id)
         if not db_obj:

@@ -13,6 +13,17 @@ class NomineeRepository(ABC):
         :rtype: Nominee
         """
         pass
+
+    @abstractmethod
+    def get_nominees_by_ids(self, nominee_ids: list[int]) -> list[Nominee]:
+        """
+        Retrieve nominees by their IDs.
+
+        :param list[int] nominee_ids: A list of nominee IDs to retrieve.
+        :return: A list of nominee entities corresponding to the provided IDs.
+        :rtype: list[Nominee]
+        """
+        pass
     
     @abstractmethod
     def get_nominee_by_id(self, nominee_id: int) -> Optional[Nominee]:
