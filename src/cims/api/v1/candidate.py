@@ -152,6 +152,7 @@ async def search_candidates(
     field_id: Optional[int] = Query(None, description="Field ID filter"),
     area_id: Optional[int] = Query(None, description="Area ID filter"),
     level_id: Optional[int] = Query(None, description="Level ID filter"),
+    headhunter_id: Optional[int] = Query(None, description="Headhunter ID filter"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
     candidate_repo: CandidateRepository = Depends(get_candidate_repository),
@@ -183,6 +184,7 @@ async def search_candidates(
             field_id=field_id,
             area_id=area_id,
             level_id=level_id,
+            headhunter_id=headhunter_id,
             limit=page_size,
             offset=offset
         )

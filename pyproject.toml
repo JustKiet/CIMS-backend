@@ -9,6 +9,7 @@ dependencies = [
     "faker>=37.4.2",
     "fastapi>=0.116.1",
     "httpx>=0.28.1",
+    "mcp[cli]>=1.12.3",
     "passlib[bcrypt]>=1.7.4",
     "psycopg2-binary>=2.9.10",
     "pydantic-settings>=2.10.1",

@@ -29,6 +29,20 @@ services:
     networks:
       - cims_network
 
+  mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    container_name: cims-mcp
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - cims_network
+
 volumes:
   cims_postgres_data:
     driver: local

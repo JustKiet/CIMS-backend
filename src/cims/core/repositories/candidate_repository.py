@@ -68,6 +68,7 @@ class CandidateRepository(ABC):
         field_id: Optional[int] = None,
         area_id: Optional[int] = None,
         level_id: Optional[int] = None,
+        headhunter_id: Optional[int] = None,
         limit: int = 100,
         offset: int = 0
     ) -> list[Candidate]:
@@ -79,6 +80,7 @@ class CandidateRepository(ABC):
         :param int field_id: The field ID to filter candidates by.
         :param int area_id: The area ID to filter candidates by.
         :param int level_id: The level ID to filter candidates by.
+        :param int headhunter_id: The headhunter ID to filter candidates by.
         :param int limit: The maximum number of candidates to return.
         :param int offset: The number of candidates to skip.
         :return: A list of candidate entities matching the filters.

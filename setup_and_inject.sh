@@ -4,10 +4,6 @@
 
 echo "Setting up environment and injecting mock data..."
 
-# Install Python dependencies
-echo "Installing Python dependencies..."
-pip install -r requirements.in
-
 # Check if .env file exists
 if [ ! -f .env ]; then
     echo "Warning: .env file not found. Please create one with your database credentials."
@@ -23,6 +19,6 @@ fi
 
 # Run the mock data injection
 echo "Running mock data injection..."
-python inject_mock_data.py
+python3 inject_mock_data.py
 
 echo "Mock data injection completed!"

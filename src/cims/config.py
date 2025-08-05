@@ -3,6 +3,9 @@ from typing import Optional
 import logging
 
 class Settings(BaseSettings):
+    MCP_HOST: str
+    MCP_PORT: int
+
     POSTGRES_HOST: str
     POSTGRES_PORT: int
     POSTGRES_USER: str

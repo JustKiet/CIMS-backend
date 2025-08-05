@@ -65,6 +65,7 @@ class SQLAlchemyCandidateRepository(CandidateRepository):
         field_id: Optional[int] = None,
         area_id: Optional[int] = None,
         level_id: Optional[int] = None,
+        headhunter_id: Optional[int] = None,
         limit: int = 100,
         offset: int = 0
     ) -> list[Candidate]:
@@ -80,6 +81,8 @@ class SQLAlchemyCandidateRepository(CandidateRepository):
             query = query.filter(CandidateDB.area_id == area_id)
         if level_id:
             query = query.filter(CandidateDB.level_id == level_id)
+        if headhunter_id:
+            query = query.filter(CandidateDB.headhunter_id == headhunter_id)
 
         db_candidates = query.offset(offset).limit(limit).all()
         return [self._to_domain_entity(candidate) for candidate in db_candidates]

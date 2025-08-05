@@ -44,6 +44,7 @@ class HeadhunterAuthenticationUsecase:
             email=headhunter.email,
             area_id=headhunter.area_id,
             role=headhunter.role,
+            area_name=None,
             created_at=headhunter.created_at,
             updated_at=headhunter.updated_at,
         )
