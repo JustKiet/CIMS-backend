@@ -34,6 +34,9 @@ class NomineeUpdate(BaseModel):
 class NomineeResponse(NomineeBase):
     """Schema for nominee response."""
     nominee_id: int = Field(..., description="Unique nominee ID")
+    nominee_name: Optional[str] = Field(..., max_length=255, description="Nominee name")
+    project_name: Optional[str] = Field(None, max_length=255, description="Project name")
+    headhunter_name: Optional[str] = Field(..., max_length=255, description="Headhunter name")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 

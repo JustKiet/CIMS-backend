@@ -214,6 +214,77 @@ async def search_projects(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/customer/{customer_id}",
+    response_model=ProjectListResponse,
+    summary="Get projects by customer ID",
+    description="Retrieve all projects for a specific customer with pagination"
+)
+async def get_projects_by_customer(
+    customer_id: int,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository)
+):
+    """Get all projects for a specific customer with pagination."""
+    try:
+        # Verify customer exists
+        customer = customer_repo.get_customer_by_id(customer_id)
+        if not customer:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        offset = (page - 1) * page_size
+        projects = project_repo.get_projects_by_customer_id(
+            customer_id=customer_id,
+            limit=page_size,
+            offset=offset
+        )
+        total = project_repo.count_projects_by_customer_id(customer_id)
+        
+        project_responses = [entity_to_response_model(project, ProjectResponse) for project in projects]
+
+        if project_responses:
+            # Step 1: Collect all unique IDs
+            customer_ids = {p.customer_id for p in project_responses}
+            expertise_ids = {p.expertise_id for p in project_responses}
+            area_ids = {p.area_id for p in project_responses}
+            level_ids = {p.level_id for p in project_responses}
+
+            # Step 2: Fetch all needed data in bulk
+            customers = customer_repo.get_customers_by_ids(list(customer_ids))
+            expertises = expertise_repo.get_expertises_by_ids(list(expertise_ids))
+            areas = area_repo.get_areas_by_ids(list(area_ids))
+            levels = level_repo.get_levels_by_ids(list(level_ids))
+
+            # Step 3: Build lookup dictionaries
+            customer_map = {c.customer_id: c.name for c in customers}
+            expertise_map = {e.expertise_id: e.name for e in expertises}
+            area_map = {a.area_id: a.name for a in areas}
+            level_map = {l.level_id: l.name for l in levels}
+
+            # Step 4: Map names onto project_responses
+            for project_response in project_responses:
+                project_response.customer_name = customer_map[project_response.customer_id]
+                project_response.expertise_name = expertise_map[project_response.expertise_id]
+                project_response.area_name = area_map[project_response.area_id]
+                project_response.level_name = level_map[project_response.level_id]
+
+        return create_list_response(
+            data=project_responses,
+            total=total,
+            page=page,
+            page_size=page_size,
+            message=f"Found {total} projects for customer"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/{project_id}",
     response_model=ProjectDetailResponse,
     summary="Get project by ID",

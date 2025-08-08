@@ -118,3 +118,27 @@ class ProjectRepository(ABC):
         :rtype: int
         """
         pass
+
+    @abstractmethod
+    def get_projects_by_customer_id(self, customer_id: int, limit: int = 100, offset: int = 0) -> list[Project]:
+        """
+        Retrieve all projects for a specific customer with pagination.
+
+        :param int customer_id: The customer ID to filter projects by.
+        :param int limit: The maximum number of projects to return.
+        :param int offset: The number of projects to skip.
+        :return: A list of project entities for the customer.
+        :rtype: list[Project]
+        """
+        pass
+
+    @abstractmethod
+    def count_projects_by_customer_id(self, customer_id: int) -> int:
+        """
+        Count total projects for a specific customer.
+
+        :param int customer_id: The customer ID to count projects for.
+        :return: Count of projects for the customer.
+        :rtype: int
+        """
+        pass

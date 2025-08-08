@@ -134,3 +134,22 @@ class SQLAlchemyProjectRepository(ProjectRepository):
             )
             .count()
         )
+
+    def get_projects_by_customer_id(self, customer_id: int, limit: int = 100, offset: int = 0) -> list[Project]:
+        """Retrieve all projects for a specific customer with pagination."""
+        db_projects = (
+            self.db_session.query(ProjectDB)
+            .filter(ProjectDB.customer_id == customer_id)
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+        return [self._to_domain_entity(project) for project in db_projects]
+
+    def count_projects_by_customer_id(self, customer_id: int) -> int:
+        """Count total projects for a specific customer."""
+        return (
+            self.db_session.query(ProjectDB)
+            .filter(ProjectDB.customer_id == customer_id)
+            .count()
+        )

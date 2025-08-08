@@ -31,6 +31,7 @@ class CustomerUpdate(BaseModel):
 class CustomerResponse(CustomerBase):
     """Schema for customer response."""
     customer_id: int = Field(..., description="Unique customer ID")
+    field_name: Optional[str] = Field(None, description="Field name")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 

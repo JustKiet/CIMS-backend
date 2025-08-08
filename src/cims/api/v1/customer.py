@@ -1,9 +1,10 @@
+from cims.core.repositories.field_repository import FieldRepository
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
 from cims.core.repositories.customer_repository import CustomerRepository
 from cims.core.entities.customer import Customer
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_customer_repository
+from cims.deps import get_customer_repository, get_field_repository
 from cims.schemas import (
     CustomerCreate,
     CustomerUpdate,
@@ -68,7 +69,8 @@ async def create_customer(
 async def get_customers(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    customer_repo: CustomerRepository = Depends(get_customer_repository)
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Get all customers with pagination."""
     try:
@@ -76,6 +78,15 @@ async def get_customers(
         customers = customer_repo.get_all_customers(limit=page_size, offset=offset)
         
         customer_responses = [entity_to_response_model(customer, CustomerResponse) for customer in customers]
+
+        if customer_responses:
+            field_ids = {c.field_id for c in customers}
+            fields = field_repo.get_fields_by_ids(list(field_ids))
+            field_map = {f.field_id: f.name for f in fields}
+
+            for customer_response in customer_responses:
+                customer_response.field_name = field_map.get(customer_response.field_id)
+
         total = len(customers)
         
         return create_list_response(
@@ -98,7 +109,8 @@ async def search_customers(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    customer_repo: CustomerRepository = Depends(get_customer_repository)
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Search customers by name, email, company, or phone."""
     try:
@@ -110,6 +122,15 @@ async def search_customers(
         )
         
         customer_responses = [entity_to_response_model(customer, CustomerResponse) for customer in customers]
+
+        if customer_responses:
+            field_ids = {c.field_id for c in customers}
+            fields = field_repo.get_fields_by_ids(list(field_ids))
+            field_map = {f.field_id: f.name for f in fields}
+
+            for customer_response in customer_responses:
+                customer_response.field_name = field_map.get(customer_response.field_id)
+
         total = len(customers)
         
         return create_list_response(
@@ -130,7 +151,8 @@ async def search_customers(
 )
 async def get_customer(
     customer_id: int,
-    customer_repo: CustomerRepository = Depends(get_customer_repository)
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Get a customer by ID."""
     try:
@@ -140,6 +162,11 @@ async def get_customer(
             raise HTTPException(status_code=404, detail="Customer not found")
         
         customer_response = entity_to_response_model(customer, CustomerResponse)
+
+        # Fetch field name if available
+        field = field_repo.get_field_by_id(customer.field_id)
+        if field:
+            customer_response.field_name = field.name
         
         return CustomerDetailResponse(
             success=True,

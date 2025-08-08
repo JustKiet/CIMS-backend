@@ -94,7 +94,7 @@ async def get_candidates(
     field_repo: FieldRepository = Depends(get_field_repository),
     area_repo: AreaRepository = Depends(get_area_repository),
     level_repo: LevelRepository = Depends(get_level_repository),
-    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
 ):
     """Get all candidates with pagination."""
     try:

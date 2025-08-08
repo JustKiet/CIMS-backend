@@ -1,9 +1,12 @@
+from cims.core.repositories.candidate_repository import CandidateRepository
+from cims.core.repositories.project_repository import ProjectRepository
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
 from cims.core.repositories.nominee_repository import NomineeRepository
 from cims.core.entities.nominee import Nominee
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_nominee_repository
+from cims.deps import get_nominee_repository, get_candidate_repository, get_project_repository, get_headhunter_repository
 from cims.schemas import (
     NomineeCreate,
     NomineeUpdate,
@@ -33,6 +36,9 @@ router = APIRouter(
 async def create_nominee(
     nominee_data: NomineeCreate,
     nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Create a new nominee."""
     try:
@@ -48,7 +54,26 @@ async def create_nominee(
         )
         
         created_nominee = nominee_repo.create_nominee(nominee)
-        nominee_response = entity_to_response_model(created_nominee, NomineeResponse)
+        
+        # Fetch additional details to populate the response properly
+        candidate_details = candidate_repo.get_candidate_by_id(created_nominee.candidate_id)
+        project_details = project_repo.get_project_by_id(created_nominee.project_id)
+        
+        # Convert entity to dict and add additional fields
+        nominee_dict = created_nominee.to_dict() if hasattr(created_nominee, 'to_dict') else created_nominee.__dict__
+        
+        if candidate_details:
+            nominee_dict['nominee_name'] = candidate_details.name
+            # Get headhunter details through candidate
+            headhunter_details = headhunter_repo.get_headhunter_by_id(candidate_details.headhunter_id)
+            nominee_dict['headhunter_name'] = headhunter_details.name if headhunter_details else 'Unknown'
+        else:
+            nominee_dict['nominee_name'] = 'Unknown'
+            nominee_dict['headhunter_name'] = 'Unknown'
+        
+        nominee_dict['project_name'] = project_details.name if project_details else 'Unknown'
+        
+        nominee_response = NomineeResponse(**nominee_dict)
         
         return NomineeDetailResponse(
             success=True,
@@ -131,18 +156,48 @@ async def get_nominees_by_candidate(
     candidate_id: int,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    nominee_repo: NomineeRepository = Depends(get_nominee_repository)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get nominees by candidate ID."""
     try:
         offset = (page - 1) * page_size
+
+        candidate_details = candidate_repo.get_candidate_by_id(candidate_id)
+        if not candidate_details:
+            raise HTTPException(status_code=404, detail="Candidate not found")
+        
         nominees = nominee_repo.get_nominees_by_candidate_id(
             candidate_id=candidate_id,
             limit=page_size,
             offset=offset
         )
+
+        project_details = project_repo.get_projects_by_ids(
+            project_ids=[nominee.project_id for nominee in nominees]
+        )
+
+        headhunter_details = headhunter_repo.get_headhunter_by_id(candidate_details.headhunter_id)
+        if not headhunter_details:
+            raise HTTPException(status_code=404, detail="Headhunter not found")
+
+        nominee_responses = []
         
-        nominee_responses = [entity_to_response_model(nominee, NomineeResponse) for nominee in nominees]
+        # Create a mapping from project_id to project name for safe lookup
+        project_map = {project.project_id: project.name for project in project_details}
+        
+        for nominee in nominees:
+            # Convert entity to dict and add additional fields
+            nominee_dict = nominee.to_dict() if hasattr(nominee, 'to_dict') else nominee.__dict__
+            nominee_dict['nominee_name'] = candidate_details.name
+            nominee_dict['project_name'] = project_map.get(nominee.project_id, None)
+            nominee_dict['headhunter_name'] = headhunter_details.name
+            
+            # Create response model with all fields
+            nominee_responses.append(NomineeResponse(**nominee_dict))
+
         total = len(nominees)
         
         return create_list_response(
@@ -165,18 +220,73 @@ async def get_nominees_by_project(
     project_id: int,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    nominee_repo: NomineeRepository = Depends(get_nominee_repository)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository)
 ):
     """Get nominees by project ID."""
     try:
         offset = (page - 1) * page_size
+
+        # Check if project exists
+        project_details = project_repo.get_project_by_id(project_id)
+        if not project_details:
+            raise HTTPException(status_code=404, detail="Project not found")
+
         nominees = nominee_repo.get_nominees_by_project_id(
             project_id=project_id,
             limit=page_size,
             offset=offset
         )
+
+        # Get all unique candidate IDs from nominees
+        candidate_ids = list(set([nominee.candidate_id for nominee in nominees]))
         
-        nominee_responses = [entity_to_response_model(nominee, NomineeResponse) for nominee in nominees]
+        # Fetch candidate details for all nominees
+        candidate_details_list = []
+        for candidate_id in candidate_ids:
+            candidate = candidate_repo.get_candidate_by_id(candidate_id)
+            if candidate:
+                candidate_details_list.append(candidate)
+
+        # Create mappings for quick lookup
+        candidate_map = {candidate.candidate_id: candidate for candidate in candidate_details_list}
+        
+        # Get all unique headhunter IDs from candidates
+        headhunter_ids = list(set([candidate.headhunter_id for candidate in candidate_details_list]))
+        
+        # Fetch headhunter details
+        headhunter_details_list = []
+        for headhunter_id in headhunter_ids:
+            headhunter = headhunter_repo.get_headhunter_by_id(headhunter_id)
+            if headhunter:
+                headhunter_details_list.append(headhunter)
+
+        headhunter_map = {headhunter.headhunter_id: headhunter for headhunter in headhunter_details_list}
+
+        nominee_responses = []
+        
+        for nominee in nominees:
+            # Convert entity to dict and add additional fields
+            nominee_dict = nominee.to_dict() if hasattr(nominee, 'to_dict') else nominee.__dict__
+            
+            # Get candidate details
+            candidate = candidate_map.get(nominee.candidate_id)
+            if candidate:
+                nominee_dict['nominee_name'] = candidate.name
+                # Get headhunter details through candidate
+                headhunter = headhunter_map.get(candidate.headhunter_id)
+                nominee_dict['headhunter_name'] = headhunter.name if headhunter else 'Unknown'
+            else:
+                nominee_dict['nominee_name'] = 'Unknown'
+                nominee_dict['headhunter_name'] = 'Unknown'
+            
+            nominee_dict['project_name'] = project_details.name
+            
+            # Create response model with all fields
+            nominee_responses.append(NomineeResponse(**nominee_dict))
+
         total = len(nominees)
         
         return create_list_response(
@@ -197,7 +307,10 @@ async def get_nominees_by_project(
 )
 async def get_nominee(
     nominee_id: int,
-    nominee_repo: NomineeRepository = Depends(get_nominee_repository)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get a nominee by ID."""
     try:
@@ -206,7 +319,25 @@ async def get_nominee(
         if not nominee:
             raise HTTPException(status_code=404, detail="Nominee not found")
         
-        nominee_response = entity_to_response_model(nominee, NomineeResponse)
+        # Fetch additional details to populate the response properly
+        candidate_details = candidate_repo.get_candidate_by_id(nominee.candidate_id)
+        project_details = project_repo.get_project_by_id(nominee.project_id)
+        
+        # Convert entity to dict and add additional fields
+        nominee_dict = nominee.to_dict() if hasattr(nominee, 'to_dict') else nominee.__dict__
+        
+        if candidate_details:
+            nominee_dict['nominee_name'] = candidate_details.name
+            # Get headhunter details through candidate
+            headhunter_details = headhunter_repo.get_headhunter_by_id(candidate_details.headhunter_id)
+            nominee_dict['headhunter_name'] = headhunter_details.name if headhunter_details else 'Unknown'
+        else:
+            nominee_dict['nominee_name'] = 'Unknown'
+            nominee_dict['headhunter_name'] = 'Unknown'
+        
+        nominee_dict['project_name'] = project_details.name if project_details else 'Unknown'
+        
+        nominee_response = NomineeResponse(**nominee_dict)
         
         return NomineeDetailResponse(
             success=True,
@@ -228,6 +359,9 @@ async def update_nominee(
     nominee_id: int,
     nominee_data: NomineeUpdate,
     nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Update a nominee."""
     try:
@@ -253,7 +387,26 @@ async def update_nominee(
         )
         
         updated_nominee = nominee_repo.update_nominee(updated_nominee_entity)
-        nominee_response = entity_to_response_model(updated_nominee, NomineeResponse)
+        
+        # Fetch additional details to populate the response properly
+        candidate_details = candidate_repo.get_candidate_by_id(updated_nominee.candidate_id)
+        project_details = project_repo.get_project_by_id(updated_nominee.project_id)
+        
+        # Convert entity to dict and add additional fields
+        nominee_dict = updated_nominee.to_dict() if hasattr(updated_nominee, 'to_dict') else updated_nominee.__dict__
+        
+        if candidate_details:
+            nominee_dict['nominee_name'] = candidate_details.name
+            # Get headhunter details through candidate
+            headhunter_details = headhunter_repo.get_headhunter_by_id(candidate_details.headhunter_id)
+            nominee_dict['headhunter_name'] = headhunter_details.name if headhunter_details else 'Unknown'
+        else:
+            nominee_dict['nominee_name'] = 'Unknown'
+            nominee_dict['headhunter_name'] = 'Unknown'
+        
+        nominee_dict['project_name'] = project_details.name if project_details else 'Unknown'
+        
+        nominee_response = NomineeResponse(**nominee_dict)
         
         return NomineeDetailResponse(
             success=True,

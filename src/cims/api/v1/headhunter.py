@@ -4,7 +4,8 @@ from cims.core.repositories.headhunter_repository import HeadhunterRepository
 from cims.core.repositories.area_repository import AreaRepository
 from cims.core.entities.headhunter import Headhunter
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_headhunter_repository, get_area_repository
+from cims.deps import get_headhunter_repository, get_area_repository, get_authenticator
+from cims.auth import Authenticator
 from cims.schemas import (
     HeadhunterCreate,
     HeadhunterUpdate,
@@ -34,6 +35,7 @@ router = APIRouter(
 async def create_headhunter(
     headhunter_data: HeadhunterCreate,
     headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
+    authenticator: Authenticator = Depends(get_authenticator),
 ):
     """Create a new headhunter."""
     try:
@@ -42,7 +44,7 @@ async def create_headhunter(
             name=headhunter_data.name,
             phone=headhunter_data.phone,
             email=str(headhunter_data.email),
-            hashed_password=headhunter_data.password,  # In production, this should be hashed
+            hashed_password=authenticator.get_password_hash(headhunter_data.password),  # Hash the password
             role=headhunter_data.role or "HEADHUNTER",
             area_id=headhunter_data.area_id or 1,  # Default area_id
             created_at=None,
