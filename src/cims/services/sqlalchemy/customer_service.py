@@ -1,11 +1,11 @@
 from cims.core.entities.customer import Customer
-from cims.core.repositories.customer_repository import CustomerRepository
+from cims.core.services.customer_service import CustomerService
 from cims.core.exceptions import NotFoundError
 from cims.database.models import CustomerDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
-class SQLAlchemyCustomerRepository(CustomerRepository):
+class SQLAlchemyCustomerService(CustomerService):
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 

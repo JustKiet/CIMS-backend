@@ -2,7 +2,7 @@ from cims.core.entities.headhunter import Headhunter
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class HeadhunterRepository(ABC):
+class HeadhunterService(ABC):
     @abstractmethod
     def create_headhunter(self, headhunter: Headhunter) -> Headhunter:
         """

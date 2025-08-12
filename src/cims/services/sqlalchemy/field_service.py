@@ -1,11 +1,11 @@
 from cims.core.entities.field import Field
-from cims.core.repositories.field_repository import FieldRepository
+from cims.core.services.field_service import FieldService
 from cims.database.models import FieldDB
 from sqlalchemy.orm import Session
 from cims.core.exceptions import NotFoundError
 from typing import Optional
 
-class SQLAlchemyFieldRepository(FieldRepository):
+class SQLAlchemyFieldService(FieldService):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 

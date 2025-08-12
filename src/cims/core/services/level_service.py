@@ -2,7 +2,7 @@ from cims.core.entities.level import Level
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class LevelRepository(ABC):
+class LevelService(ABC):
     @abstractmethod
     def create_level(self, level: Level) -> Level:
         """

@@ -1,11 +1,11 @@
 from cims.core.entities.level import Level
-from cims.core.repositories.level_repository import LevelRepository
+from cims.core.services.level_service import LevelService
 from cims.database.models import LevelDB
 from sqlalchemy.orm import Session
 from cims.core.exceptions import NotFoundError
 from typing import Optional
 
-class SQLAlchemyLevelRepository(LevelRepository):
+class SQLAlchemyLevelService(LevelService):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 

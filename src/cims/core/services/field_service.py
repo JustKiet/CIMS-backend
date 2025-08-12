@@ -2,7 +2,7 @@ from cims.core.entities.field import Field
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class FieldRepository(ABC):
+class FieldService(ABC):
     @abstractmethod
     def create_field(self, field: Field) -> Field:
         """

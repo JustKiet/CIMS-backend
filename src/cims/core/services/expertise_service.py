@@ -2,7 +2,7 @@ from cims.core.entities.expertise import Expertise
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class ExpertiseRepository(ABC):
+class ExpertiseService(ABC):
     @abstractmethod
     def create_expertise(self, expertise: Expertise) -> Expertise:
         """

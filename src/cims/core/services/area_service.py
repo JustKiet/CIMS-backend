@@ -2,7 +2,7 @@ from cims.core.entities.area import Area
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class AreaRepository(ABC):
+class AreaService(ABC):
     @abstractmethod
     def create_area(self, area: Area) -> Area:
         """

@@ -2,7 +2,7 @@ from cims.core.entities.candidate import Candidate
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class CandidateRepository(ABC):
+class CandidateService(ABC):
     @abstractmethod
     def create_candidate(self, candidate: Candidate) -> Candidate:
         """

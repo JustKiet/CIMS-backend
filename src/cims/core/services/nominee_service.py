@@ -2,7 +2,7 @@ from cims.core.entities.nominee import Nominee
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class NomineeRepository(ABC):
+class NomineeService(ABC):
     @abstractmethod
     def create_nominee(self, nominee: Nominee) -> Nominee:
         """
@@ -121,5 +121,15 @@ class NomineeRepository(ABC):
         :param int offset: The number of nominees to skip.
         :return: A list of matching nominee entities.
         :rtype: list[Nominee]
+        """
+        pass
+
+    @abstractmethod
+    def count_all_nominees(self) -> int:
+        """
+        Count the total number of nominees in the repository.
+
+        :return: The total number of nominees.
+        :rtype: int
         """
         pass

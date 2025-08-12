@@ -1,11 +1,11 @@
 from cims.core.entities.project import Project
-from cims.core.repositories.project_repository import ProjectRepository
+from cims.core.services.project_service import ProjectService
 from cims.core.exceptions import NotFoundError
 from cims.database.models import CustomerDB, ExpertiseDB, ProjectDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
-class SQLAlchemyProjectRepository(ProjectRepository):
+class SQLAlchemyProjectService(ProjectService):
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 

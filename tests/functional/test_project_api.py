@@ -10,11 +10,9 @@ from datetime import date # type: ignore
 class TestProjectAPI:
     """Test suite for Project API endpoints."""
     
-    def test_create_project_success(self, client: TestClient) -> None:
+    def test_create_project_success(self, client: TestClient, setup_test_data: dict) -> None:
         """Test successful project creation."""
         project_data: dict[str, Any] = {
-            "name": "Test Project",
-            "customer_id": 1,
             "description": "A test project for API validation",
             "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
@@ -24,10 +22,10 @@ class TestProjectAPI:
             "type": "CODINH",
             "required_recruits": 1,
             "recruited": 0,
-            "customer_id": 1,
-            "expertise_id": 1,
-            "area_id": 1,
-            "level_id": 1,
+            "customer_id": setup_test_data["customer"]["customer_id"],
+            "expertise_id": setup_test_data["expertise"]["expertise_id"],
+            "area_id": setup_test_data["area"]["area_id"],
+            "level_id": setup_test_data["level"]["level_id"],
         }
         
         response = client.post("/api/v1/projects/", json=project_data)
@@ -37,7 +35,7 @@ class TestProjectAPI:
         assert data["success"] is True
         assert data["message"] == "Project created successfully"
         assert "data" in data
-        assert data["data"]["name"] == "Test Project"
+        assert "name" in data["data"]  # Name is generated from customer and expertise
         assert "project_id" in data["data"]
 
     def test_create_project_invalid_data(self, client: TestClient) -> None:
@@ -108,12 +106,10 @@ class TestProjectAPI:
         assert data["success"] is True
         assert "data" in data
 
-    def test_get_project_by_id_success(self, client: TestClient) -> None:
+    def test_get_project_by_id_success(self, client: TestClient, setup_test_data: dict) -> None:
         """Test getting project by ID."""
         # First create a project
         project_data: dict[str, Any] = {
-            "name": "Get Project Test",
-            "customer_id": 1,
             "description": "Test getting project",
             "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
@@ -123,10 +119,10 @@ class TestProjectAPI:
             "type": "CODINH",
             "required_recruits": 1,
             "recruited": 0,
-            "customer_id": 1,
-            "expertise_id": 1,
-            "area_id": 1,
-            "level_id": 1,
+            "customer_id": setup_test_data["customer"]["customer_id"],
+            "expertise_id": setup_test_data["expertise"]["expertise_id"],
+            "area_id": setup_test_data["area"]["area_id"],
+            "level_id": setup_test_data["level"]["level_id"],
         }
         create_response = client.post("/api/v1/projects/", json=project_data)
         created_project: dict[str, Any] = create_response.json()["data"]
@@ -136,7 +132,7 @@ class TestProjectAPI:
         assert response.status_code == 200
         data: dict[str, Any] = response.json()
         assert data["success"] is True
-        assert data["data"]["name"] == "Get Project Test"
+        assert data["data"]["name"] == "[Test Customer] Test Expertise"  # Name is generated from customer and expertise
         assert data["data"]["project_id"] == created_project["project_id"]
 
     def test_get_project_by_id_not_found(self, client: TestClient) -> None:
@@ -148,12 +144,10 @@ class TestProjectAPI:
         assert "detail" in data
         assert data["detail"] == "Project not found"
 
-    def test_update_project_success(self, client: TestClient) -> None:
+    def test_update_project_success(self, client: TestClient, setup_test_data: dict) -> None:
         """Test updating project."""
         # First create a project
         project_data: dict[str, Any] = {
-            "name": "Update Project Test",
-            "customer_id": 1,
             "description": "Test updating project",
             "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
@@ -163,10 +157,10 @@ class TestProjectAPI:
             "type": "CODINH",
             "required_recruits": 1,
             "recruited": 0,
-            "customer_id": 1,
-            "expertise_id": 1,
-            "area_id": 1,
-            "level_id": 1,
+            "customer_id": setup_test_data["customer"]["customer_id"],
+            "expertise_id": setup_test_data["expertise"]["expertise_id"],
+            "area_id": setup_test_data["area"]["area_id"],
+            "level_id": setup_test_data["level"]["level_id"],
         }
         create_response = client.post("/api/v1/projects/", json=project_data)
         created_project: dict[str, Any] = create_response.json()["data"]
@@ -179,7 +173,7 @@ class TestProjectAPI:
         data: dict[str, Any] = response.json()
         assert data["success"] is True
         assert data["message"] == "Project updated successfully"
-        assert data["data"]["name"] == "Updated Project Name"
+        assert "name" in data["data"]  # Name is still generated, can't be updated directly
 
     def test_update_project_not_found(self, client: TestClient) -> None:
         """Test updating non-existent project."""
@@ -191,12 +185,10 @@ class TestProjectAPI:
         assert "detail" in data
         assert data["detail"] == "Project not found"
 
-    def test_delete_project_success(self, client: TestClient) -> None:
+    def test_delete_project_success(self, client: TestClient, setup_test_data: dict) -> None:
         """Test deleting project."""
         # First create a project
         project_data: dict[str, Any] = {
-            "name": "Delete Project Test",
-            "customer_id": 1,
             "description": "Test deleting project",
             "status": "TIMKIEMUNGVIEN",
             "start_date": "2024-01-01",
@@ -206,10 +198,10 @@ class TestProjectAPI:
             "type": "CODINH",
             "required_recruits": 1,
             "recruited": 0,
-            "customer_id": 1,
-            "expertise_id": 1,
-            "area_id": 1,
-            "level_id": 1,
+            "customer_id": setup_test_data["customer"]["customer_id"],
+            "expertise_id": setup_test_data["expertise"]["expertise_id"],
+            "area_id": setup_test_data["area"]["area_id"],
+            "level_id": setup_test_data["level"]["level_id"],
         }
         create_response = client.post("/api/v1/projects/", json=project_data)
         created_project: dict[str, Any] = create_response.json()["data"]

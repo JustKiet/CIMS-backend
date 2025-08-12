@@ -2,7 +2,7 @@ from cims.core.entities.project import Project
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class ProjectRepository(ABC):
+class ProjectService(ABC):
     @abstractmethod
     def create_project(self, project: Project) -> Project:
         """

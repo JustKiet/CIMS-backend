@@ -2,21 +2,21 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 import datetime
 
-from cims.core.repositories.candidate_repository import CandidateRepository
-from cims.core.repositories.expertise_repository import ExpertiseRepository
-from cims.core.repositories.field_repository import FieldRepository
-from cims.core.repositories.area_repository import AreaRepository
-from cims.core.repositories.level_repository import LevelRepository
-from cims.core.repositories.headhunter_repository import HeadhunterRepository
+from cims.core.services.candidate_service import CandidateService
+from cims.core.services.expertise_service import ExpertiseService
+from cims.core.services.field_service import FieldService
+from cims.core.services.area_service import AreaService
+from cims.core.services.level_service import LevelService
+from cims.core.services.headhunter_service import HeadhunterService
 from cims.core.entities.candidate import Candidate
 from cims.core.exceptions import NotFoundError
 from cims.deps import (
-    get_candidate_repository,
-    get_expertise_repository,
-    get_field_repository,
-    get_area_repository,
-    get_level_repository,
-    get_headhunter_repository
+    get_candidate_service,
+    get_expertise_service,
+    get_field_service,
+    get_area_service,
+    get_level_service,
+    get_headhunter_service
 )
 from cims.schemas import (
     CandidateCreate,
@@ -46,7 +46,7 @@ router = APIRouter(
 )
 async def create_candidate(
     candidate_data: CandidateCreate,
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    candidate_repo: CandidateService = Depends(get_candidate_service),
 ):
     """Create a new candidate."""
     try:
@@ -89,12 +89,12 @@ async def create_candidate(
 async def get_candidates(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
-    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
-    field_repo: FieldRepository = Depends(get_field_repository),
-    area_repo: AreaRepository = Depends(get_area_repository),
-    level_repo: LevelRepository = Depends(get_level_repository),
-    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
+    candidate_repo: CandidateService = Depends(get_candidate_service),
+    expertise_repo: ExpertiseService = Depends(get_expertise_service),
+    field_repo: FieldService = Depends(get_field_service),
+    area_repo: AreaService = Depends(get_area_service),
+    level_repo: LevelService = Depends(get_level_service),
+    headhunter_repo: HeadhunterService = Depends(get_headhunter_service),
 ):
     """Get all candidates with pagination."""
     try:
@@ -155,12 +155,12 @@ async def search_candidates(
     headhunter_id: Optional[int] = Query(None, description="Headhunter ID filter"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
-    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
-    field_repo: FieldRepository = Depends(get_field_repository),
-    area_repo: AreaRepository = Depends(get_area_repository),
-    level_repo: LevelRepository = Depends(get_level_repository),
-    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
+    candidate_repo: CandidateService = Depends(get_candidate_service),
+    expertise_repo: ExpertiseService = Depends(get_expertise_service),
+    field_repo: FieldService = Depends(get_field_service),
+    area_repo: AreaService = Depends(get_area_service),
+    level_repo: LevelService = Depends(get_level_service),
+    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
 ):
     """Search candidates by name and/or filters."""
     try:
@@ -251,7 +251,7 @@ async def search_candidates(
 )
 async def get_candidate(
     candidate_id: int,
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository)
+    candidate_repo: CandidateService = Depends(get_candidate_service)
 ):
     """Get a candidate by ID."""
     try:
@@ -281,7 +281,7 @@ async def get_candidate(
 async def update_candidate(
     candidate_id: int,
     candidate_data: CandidateUpdate,
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    candidate_repo: CandidateService = Depends(get_candidate_service),
 ):
     """Update a candidate."""
     try:
@@ -333,7 +333,7 @@ async def update_candidate(
 )
 async def delete_candidate(
     candidate_id: int,
-    candidate_repo: CandidateRepository = Depends(get_candidate_repository)
+    candidate_repo: CandidateService = Depends(get_candidate_service)
 ):
     """Delete a candidate."""
     try:

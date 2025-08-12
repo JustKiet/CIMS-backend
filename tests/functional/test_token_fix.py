@@ -11,7 +11,7 @@ from cims.auth import Authenticator
 from cims.config import settings
 
 # Mock repository for testing
-class MockHeadhunterRepository:
+class MockHeadhunterService:
     def get_headhunter_by_id(self, user_id):
         return None
 
@@ -23,7 +23,7 @@ def test_token_generation():
         secret_key=settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
         access_token_expire_minutes=30,  # 30 minutes
-        headhunter_repository=MockHeadhunterRepository()
+        headhunter_service=MockHeadhunterService()
     )
     
     # Generate a token

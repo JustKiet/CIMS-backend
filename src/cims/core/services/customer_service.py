@@ -2,7 +2,7 @@ from cims.core.entities.customer import Customer
 from abc import ABC, abstractmethod
 from typing import Optional
 
-class CustomerRepository(ABC):
+class CustomerService(ABC):
     @abstractmethod
     def create_customer(self, customer: Customer) -> Customer:
         """

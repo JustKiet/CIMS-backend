@@ -4,7 +4,7 @@ import datetime
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException, Depends
 from jose import JWTError, jwt
-from cims.core.repositories.headhunter_repository import HeadhunterRepository, Headhunter
+from cims.core.services.headhunter_service import HeadhunterService, Headhunter
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -15,12 +15,12 @@ class Authenticator:
         secret_key: str, 
         algorithm: str, 
         access_token_expire_minutes: int,
-        headhunter_repository: HeadhunterRepository,
+        headhunter_service: HeadhunterService,
     ) -> None:
         self._SECRET_KEY = secret_key
         self._ALGORITHM = algorithm
         self._ACCESS_TOKEN_EXPIRE_MINUTES = access_token_expire_minutes
-        self._headhunter_repository = headhunter_repository
+        self._headhunter_service = headhunter_service
 
     def get_password_hash(self, password: str) -> str:
         return pwd_context.hash(password)
@@ -44,7 +44,7 @@ class Authenticator:
         except (JWTError, ValueError):
             raise HTTPException(status_code=401, detail="Could not validate credentials")
 
-        headhunter = self._headhunter_repository.get_headhunter_by_id(user_id)
+        headhunter = self._headhunter_service.get_headhunter_by_id(user_id)
         if headhunter is None:
             raise HTTPException(status_code=401, detail="Could not validate credentials")
         

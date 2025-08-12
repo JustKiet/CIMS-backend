@@ -112,3 +112,59 @@ def client(test_app: FastAPI, db_session: Session) -> Generator[TestClient, None
     with TestClient(test_app) as test_client:
         yield test_client
     test_app.dependency_overrides.clear()
+
+@pytest.fixture(scope="function")
+def setup_test_data(client: TestClient) -> dict:
+    """Set up basic test data that many tests depend on."""
+    test_data = {}
+    
+    # Create a field first (required by customers)
+    field_data = {
+        "name": "Test Field",
+        "description": "A test field for testing"
+    }
+    field_response = client.post("/api/v1/fields/", json=field_data)
+    if field_response.status_code == 201:
+        test_data["field"] = field_response.json()["data"]
+    
+    # Create a customer (required by projects)
+    customer_data = {
+        "name": "Test Customer",
+        "field_id": test_data["field"]["field_id"] if "field" in test_data else 1,
+        "representative_name": "John Doe",
+        "representative_phone": "1234567890",
+        "representative_email": "john@testcustomer.com",
+        "representative_role": "Manager"
+    }
+    customer_response = client.post("/api/v1/customers/", json=customer_data)
+    if customer_response.status_code == 201:
+        test_data["customer"] = customer_response.json()["data"]
+    
+    # Create an expertise (required by projects)
+    expertise_data = {
+        "name": "Test Expertise",
+        "description": "A test expertise for testing"
+    }
+    expertise_response = client.post("/api/v1/expertises/", json=expertise_data)
+    if expertise_response.status_code == 201:
+        test_data["expertise"] = expertise_response.json()["data"]
+    
+    # Create an area (required by projects)
+    area_data = {
+        "name": "Test Area",
+        "description": "A test area for testing"
+    }
+    area_response = client.post("/api/v1/areas/", json=area_data)
+    if area_response.status_code == 201:
+        test_data["area"] = area_response.json()["data"]
+    
+    # Create a level (required by projects)
+    level_data = {
+        "name": "Test Level",
+        "description": "A test level for testing"
+    }
+    level_response = client.post("/api/v1/levels/", json=level_data)
+    if level_response.status_code == 201:
+        test_data["level"] = level_response.json()["data"]
+    
+    return test_data

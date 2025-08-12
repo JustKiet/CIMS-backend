@@ -1,11 +1,11 @@
 from cims.core.entities.candidate import Candidate
-from cims.core.repositories.candidate_repository import CandidateRepository
+from cims.core.services.candidate_service import CandidateService
 from cims.core.exceptions import NotFoundError
 from cims.database.models import CandidateDB, ExpertiseDB, FieldDB, LevelDB, AreaDB, HeadhunterDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
-class SQLAlchemyCandidateRepository(CandidateRepository):
+class SQLAlchemyCandidateService(CandidateService):
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 

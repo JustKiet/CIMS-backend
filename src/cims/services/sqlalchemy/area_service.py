@@ -1,11 +1,11 @@
 from cims.core.entities.area import Area
-from cims.core.repositories.area_repository import AreaRepository
+from cims.core.services.area_service import AreaService
 from cims.core.exceptions import NotFoundError
 from cims.database.models import AreaDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
-class SQLAlchemyAreaRepository(AreaRepository):
+class SQLAlchemyAreaService(AreaService):
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
