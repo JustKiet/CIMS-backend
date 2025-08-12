@@ -38,6 +38,26 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# Add cache-busting middleware for development
+@app.middleware("http")
+async def add_cache_headers(request, call_next):
+    response = await call_next(request)
+    
+    # Disable caching for development/ngrok
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
+    # Add ngrok-friendly headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"  # Changed from DENY to SAMEORIGIN for ngrok
+    
+    # Handle ngrok browser warning bypass
+    if "ngrok-skip-browser-warning" in request.headers:
+        response.headers["ngrok-skip-browser-warning"] = "true"
+    
+    return response
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
