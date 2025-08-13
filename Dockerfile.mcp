@@ -27,7 +27,7 @@ RUN uv pip install --system --index-url https://pypi.org/simple .
 COPY . .
 
 # Expose port for FastAPI
-EXPOSE 8000
+EXPOSE 8001
 
-# COMMAND: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-CMD ["uvicorn", "cims.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# COMMAND: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+CMD ["python3", "-m", "cims.mcp_server"]
