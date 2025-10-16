@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.field_service import FieldService
+from cims.core.repositories.field_repository import FieldRepository
 from cims.core.entities.field import Field
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_field_service
+from cims.deps import get_field_repository
 from cims.schemas import (
     FieldCreate,
     FieldUpdate,
@@ -32,7 +32,7 @@ router = APIRouter(
 )
 async def create_field(
     field_data: FieldCreate,
-    field_repo: FieldService = Depends(get_field_service),
+    field_repo: FieldRepository = Depends(get_field_repository),
 ):
     """Create a new field."""
     try:
@@ -61,7 +61,7 @@ async def create_field(
 async def get_fields(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    field_repo: FieldService = Depends(get_field_service)
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Get all fields with pagination."""
     try:
@@ -91,7 +91,7 @@ async def search_fields(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    field_repo: FieldService = Depends(get_field_service)
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Search fields by name."""
     try:
@@ -123,7 +123,7 @@ async def search_fields(
 )
 async def get_field(
     field_id: int,
-    field_repo: FieldService = Depends(get_field_service)
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Get a field by ID."""
     try:
@@ -153,7 +153,7 @@ async def get_field(
 async def update_field(
     field_id: int,
     field_data: FieldUpdate,
-    field_repo: FieldService = Depends(get_field_service),
+    field_repo: FieldRepository = Depends(get_field_repository),
 ):
     """Update a field."""
     try:
@@ -193,7 +193,7 @@ async def update_field(
 )
 async def delete_field(
     field_id: int,
-    field_repo: FieldService = Depends(get_field_service)
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Delete a field."""
     try:

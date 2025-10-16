@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from cims.auth import Authenticator, oauth2_scheme
-from cims.core.services.headhunter_service import HeadhunterService
-from cims.services.authentication_service import HeadhunterAuthenticationService, NotFoundError, InvalidCredentialsError
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
+from cims.integrations.authentication_service import HeadhunterAuthenticationService, NotFoundError, InvalidCredentialsError
 from cims.schemas import (
     HeadhunterCreate,
     HeadhunterResponse,
@@ -13,7 +13,7 @@ from cims.schemas import (
 )
 from cims.schemas.utils import entity_to_response_model
 from cims.config import CLogger
-from cims.deps import get_headhunter_service, get_authenticator
+from cims.deps import get_headhunter_repository, get_authenticator
 import traceback
 from datetime import datetime, timedelta, timezone
 
@@ -41,7 +41,7 @@ router = APIRouter(
 async def register_headhunter(
     payload: HeadhunterCreate,
     authenticator: Authenticator = Depends(get_authenticator),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ) -> HeadhunterDetailResponse:
     """
     Register a new headhunter and return their details.
@@ -53,7 +53,7 @@ async def register_headhunter(
     """
     try:
         usecase = HeadhunterAuthenticationService(
-            headhunter_service=headhunter_repo,
+            headhunter_repository=headhunter_repo,
             authenticator=authenticator
         )
 
@@ -78,7 +78,7 @@ async def register_headhunter(
 async def login_headhunter(
     form_data: OAuth2PasswordRequestForm = Depends(),
     authenticator: Authenticator = Depends(get_authenticator),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ) -> LoginResponse:
     """
     Authenticate a headhunter and return their details.
@@ -90,7 +90,7 @@ async def login_headhunter(
     """
     try:
         usecase = HeadhunterAuthenticationService(
-            headhunter_service=headhunter_repo,
+            headhunter_repository=headhunter_repo,
             authenticator=authenticator
         )
 

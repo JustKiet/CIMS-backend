@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.expertise_service import ExpertiseService
+from cims.core.repositories.expertise_repository import ExpertiseRepository
 from cims.core.entities.expertise import Expertise
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_expertise_service
+from cims.deps import get_expertise_repository
 from cims.schemas import (
     ExpertiseCreate,
     ExpertiseUpdate,
@@ -32,7 +32,7 @@ router = APIRouter(
 )
 async def create_expertise(
     expertise_data: ExpertiseCreate,
-    expertise_repo: ExpertiseService = Depends(get_expertise_service),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
 ):
     """Create a new expertise."""
     try:
@@ -61,7 +61,7 @@ async def create_expertise(
 async def get_expertises(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    expertise_repo: ExpertiseService = Depends(get_expertise_service)
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository)
 ):
     """Get all expertises with pagination."""
     try:
@@ -91,7 +91,7 @@ async def search_expertises(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    expertise_repo: ExpertiseService = Depends(get_expertise_service)
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository)
 ):
     """Search expertises by name."""
     try:
@@ -123,7 +123,7 @@ async def search_expertises(
 )
 async def get_expertise(
     expertise_id: int,
-    expertise_repo: ExpertiseService = Depends(get_expertise_service)
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository)
 ):
     """Get an expertise by ID."""
     try:
@@ -153,7 +153,7 @@ async def get_expertise(
 async def update_expertise(
     expertise_id: int,
     expertise_data: ExpertiseUpdate,
-    expertise_repo: ExpertiseService = Depends(get_expertise_service),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
 ):
     """Update an expertise."""
     try:
@@ -193,7 +193,7 @@ async def update_expertise(
 )
 async def delete_expertise(
     expertise_id: int,
-    expertise_repo: ExpertiseService = Depends(get_expertise_service)
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository)
 ):
     """Delete an expertise."""
     try:

@@ -1,12 +1,9 @@
 from cims.core.entities.project import Project
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.project_repository import ProjectRepository
-
-class ProjectService:
-    def __init__(self, project_repository: ProjectRepository):
-        self.project_repository = project_repository
-
+class ProjectRepository(ABC):
+    @abstractmethod
     def create_project(self, project: Project) -> Project:
         """
         Create a new project in the repository.
@@ -15,8 +12,9 @@ class ProjectService:
         :return: The created project entity.
         :rtype: Project
         """
-        return self.project_repository.create_project(project=project)
+        pass
 
+    @abstractmethod
     def get_projects_by_ids(self, project_ids: list[int]) -> list[Project]:
         """
         Retrieve projects by their IDs.
@@ -25,8 +23,9 @@ class ProjectService:
         :return: A list of project entities.
         :rtype: list[Project]
         """
-        return self.project_repository.get_projects_by_ids(project_ids=project_ids)
+        pass
     
+    @abstractmethod
     def get_project_by_id(self, project_id: int) -> Optional[Project]:
         """
         Retrieve a project by its ID.
@@ -35,8 +34,9 @@ class ProjectService:
         :return: The project entity if found, otherwise None.
         :rtype: Optional[Project]
         """
-        return self.project_repository.get_project_by_id(project_id=project_id)
+        pass
     
+    @abstractmethod
     def update_project(self, project: Project) -> Project:
         """
         Update an existing project in the repository.
@@ -46,8 +46,9 @@ class ProjectService:
         :rtype: Project
         :raises NotFoundError: If the project with the given ID does not exist.
         """
-        return self.project_repository.update_project(project=project)
+        pass
 
+    @abstractmethod
     def delete_project(self, project_id: int) -> bool:
         """
         Delete a project by its ID.
@@ -57,8 +58,9 @@ class ProjectService:
         :rtype: bool
         :raises NotFoundError: If the project with the given ID does not exist.
         """
-        return self.project_repository.delete_project(project_id=project_id)
+        pass
 
+    @abstractmethod
     def get_all_projects(self, limit: int = 100, offset: int = 0) -> list[Project]:
         """
         Retrieve all projects from the repository with pagination.
@@ -68,8 +70,9 @@ class ProjectService:
         :return: A list of project entities.
         :rtype: list[Project]
         """
-        return self.project_repository.get_all_projects(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_projects_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Project]:
         """
         Search projects by name using a partial match.
@@ -80,8 +83,9 @@ class ProjectService:
         :return: A list of matching project entities.
         :rtype: list[Project]
         """
-        return self.project_repository.search_projects_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_projects_comprehensive(self, query: str, limit: int = 100, offset: int = 0) -> list[Project]:
         """
         Search projects by name, customer name, or expertise name using a partial match.
@@ -92,8 +96,9 @@ class ProjectService:
         :return: A list of matching project entities.
         :rtype: list[Project]
         """
-        return self.project_repository.search_projects_comprehensive(query=query, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def count_all_projects(self) -> int:
         """
         Count the total number of projects in the repository.
@@ -101,8 +106,9 @@ class ProjectService:
         :return: Total count of projects.
         :rtype: int
         """
-        return self.project_repository.count_all_projects()
+        pass
 
+    @abstractmethod
     def count_projects_comprehensive(self, query: str) -> int:
         """
         Count projects matching the comprehensive search query.
@@ -111,8 +117,9 @@ class ProjectService:
         :return: Count of matching projects.
         :rtype: int
         """
-        return self.project_repository.count_projects_comprehensive(query=query)
+        pass
 
+    @abstractmethod
     def get_projects_by_customer_id(self, customer_id: int, limit: int = 100, offset: int = 0) -> list[Project]:
         """
         Retrieve all projects for a specific customer with pagination.
@@ -123,8 +130,9 @@ class ProjectService:
         :return: A list of project entities for the customer.
         :rtype: list[Project]
         """
-        return self.project_repository.get_projects_by_customer_id(customer_id=customer_id, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def count_projects_by_customer_id(self, customer_id: int) -> int:
         """
         Count total projects for a specific customer.
@@ -133,4 +141,4 @@ class ProjectService:
         :return: Count of projects for the customer.
         :rtype: int
         """
-        return self.project_repository.count_projects_by_customer_id(customer_id=customer_id)
+        pass

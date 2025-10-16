@@ -1,13 +1,9 @@
 from cims.core.entities.candidate import Candidate
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.candidate_repository import CandidateRepository
-
-class CandidateService:
-
-    def __init__(self, candidate_repository: CandidateRepository):
-        self.candidate_repository = candidate_repository
-
+class CandidateRepository(ABC):
+    @abstractmethod
     def create_candidate(self, candidate: Candidate) -> Candidate:
         """
         Create a new candidate in the repository.
@@ -16,9 +12,9 @@ class CandidateService:
         :return: The created candidate entity.
         :rtype: Candidate
         """
-        return self.candidate_repository.create_candidate(candidate)
+        pass
 
-
+    @abstractmethod
     def count_all_candidates(self) -> int:
         """
         Count the total number of candidates in the repository.
@@ -26,9 +22,9 @@ class CandidateService:
         :return: The total number of candidates.
         :rtype: int
         """
-        return self.candidate_repository.count_all_candidates()
+        pass
 
-
+    @abstractmethod
     def get_all_candidates(self, limit: int = 100, offset: int = 0) -> list[Candidate]:
         """
         Retrieve all candidates from the repository with pagination.
@@ -38,9 +34,9 @@ class CandidateService:
         :return: A list of candidate entities.
         :rtype: list[Candidate]
         """
-        return self.candidate_repository.get_all_candidates(limit=limit, offset=offset)
+        pass
 
-
+    @abstractmethod
     def get_candidate_id_by_name(self, candidate_name: str) -> Optional[int]:
         """
         Retrieve the ID of a candidate by their name.
@@ -49,9 +45,9 @@ class CandidateService:
         :return: The ID of the candidate if found, otherwise None.
         :rtype: Optional[int]
         """
-        return self.candidate_repository.get_candidate_id_by_name(candidate_name=candidate_name)
+        pass
 
-
+    @abstractmethod
     def search_candidates_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Candidate]:
         """
         Search candidates by name using a partial match.
@@ -62,9 +58,9 @@ class CandidateService:
         :return: A list of matching candidate entities.
         :rtype: list[Candidate]
         """
-        return self.candidate_repository.search_candidates_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass
 
-
+    @abstractmethod
     def search_candidates_with_filters(
         self,
         name: Optional[str] = None,
@@ -90,18 +86,9 @@ class CandidateService:
         :return: A list of candidate entities matching the filters.
         :rtype: list[Candidate]
         """
-        return self.candidate_repository.search_candidates_with_filters(
-            name=name,
-            expertise_id=expertise_id,
-            field_id=field_id,
-            area_id=area_id,
-            level_id=level_id,
-            headhunter_id=headhunter_id,
-            limit=limit,
-            offset=offset
-        )
+        pass
 
-
+    @abstractmethod
     def count_candidates_with_filters(
         self,
         name: Optional[str] = None,
@@ -121,15 +108,9 @@ class CandidateService:
         :return: The count of candidates matching the filters.
         :rtype: int
         """
-        return self.candidate_repository.count_candidates_with_filters(
-            name=name,
-            expertise_id=expertise_id,
-            field_id=field_id,
-            area_id=area_id,
-            level_id=level_id
-        )
+        pass
 
-
+    @abstractmethod
     def get_candidates_by_ids(self, candidate_ids: list[int]) -> list[Candidate]:
         """
         Retrieve candidates by their IDs.
@@ -138,9 +119,9 @@ class CandidateService:
         :return: A list of Candidate entities corresponding to the provided IDs.
         :rtype: list[Candidate]
         """
-        return self.candidate_repository.get_candidates_by_ids(candidate_ids=candidate_ids)
+        pass
     
-
+    @abstractmethod
     def get_candidate_by_id(self, candidate_id: int) -> Optional[Candidate]:
         """
         Retrieve a candidate by their ID.
@@ -149,9 +130,9 @@ class CandidateService:
         :return: The candidate entity if found, otherwise None.
         :rtype: Optional[Candidate]
         """
-        return self.candidate_repository.get_candidate_by_id(candidate_id=candidate_id)
+        pass
     
-
+    @abstractmethod
     def update_candidate(self, candidate: Candidate) -> Candidate:
         """
         Update an existing candidate in the repository.
@@ -161,9 +142,9 @@ class CandidateService:
         :rtype: Candidate
         :raises NotFoundError: If the candidate with the given ID does not exist.
         """
-        return self.candidate_repository.update_candidate(candidate=candidate)
+        pass
 
-
+    @abstractmethod
     def delete_candidate(self, candidate_id: int) -> bool:
         """
         Delete a candidate by their ID.
@@ -173,4 +154,4 @@ class CandidateService:
         :rtype: bool
         :raises NotFoundError: If the candidate with the given ID does not exist.
         """
-        return self.candidate_repository.delete_candidate(candidate_id=candidate_id)
+        pass

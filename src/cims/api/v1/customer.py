@@ -1,10 +1,10 @@
-from cims.core.services.field_service import FieldService
+from cims.core.repositories.field_repository import FieldRepository
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.customer_service import CustomerService
+from cims.core.repositories.customer_repository import CustomerRepository
 from cims.core.entities.customer import Customer
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_customer_service, get_field_service
+from cims.deps import get_customer_repository, get_field_repository
 from cims.schemas import (
     CustomerCreate,
     CustomerUpdate,
@@ -33,7 +33,7 @@ router = APIRouter(
 )
 async def create_customer(
     customer_data: CustomerCreate,
-    customer_repo: CustomerService = Depends(get_customer_service),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
 ):
     """Create a new customer."""
     try:
@@ -69,8 +69,8 @@ async def create_customer(
 async def get_customers(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    customer_repo: CustomerService = Depends(get_customer_service),
-    field_repo: FieldService = Depends(get_field_service)
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Get all customers with pagination."""
     try:
@@ -109,8 +109,8 @@ async def search_customers(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    customer_repo: CustomerService = Depends(get_customer_service),
-    field_repo: FieldService = Depends(get_field_service)
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Search customers by name, email, company, or phone."""
     try:
@@ -151,8 +151,8 @@ async def search_customers(
 )
 async def get_customer(
     customer_id: int,
-    customer_repo: CustomerService = Depends(get_customer_service),
-    field_repo: FieldService = Depends(get_field_service)
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    field_repo: FieldRepository = Depends(get_field_repository)
 ):
     """Get a customer by ID."""
     try:
@@ -187,7 +187,7 @@ async def get_customer(
 async def update_customer(
     customer_id: int,
     customer_data: CustomerUpdate,
-    customer_repo: CustomerService = Depends(get_customer_service),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
 ):
     """Update a customer."""
     try:
@@ -232,7 +232,7 @@ async def update_customer(
 )
 async def delete_customer(
     customer_id: int,
-    customer_repo: CustomerService = Depends(get_customer_service)
+    customer_repo: CustomerRepository = Depends(get_customer_repository)
 ):
     """Delete a customer."""
     try:

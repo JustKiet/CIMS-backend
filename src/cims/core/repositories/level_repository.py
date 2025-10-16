@@ -1,12 +1,9 @@
 from cims.core.entities.level import Level
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.level_repository import LevelRepository
-
-class LevelService:
-    def __init__(self, level_repository: LevelRepository):
-        self.level_repository = level_repository
-
+class LevelRepository(ABC):
+    @abstractmethod
     def create_level(self, level: Level) -> Level:
         """
         Create a new level in the repository.
@@ -15,8 +12,9 @@ class LevelService:
         :return: The created level entity.
         :rtype: Level
         """
-        return self.level_repository.create_level(level=level)
+        pass
 
+    @abstractmethod
     def get_levels_by_ids(self, level_ids: list[int]) -> list[Level]:
         """
         Retrieve levels by their IDs.
@@ -25,8 +23,9 @@ class LevelService:
         :return: A list of level entities.
         :rtype: list[Level]
         """
-        return self.level_repository.get_levels_by_ids(level_ids=level_ids)
+        pass
     
+    @abstractmethod
     def get_level_by_id(self, level_id: int) -> Optional[Level]:
         """
         Retrieve a level by its ID.
@@ -35,8 +34,9 @@ class LevelService:
         :return: The level entity if found, otherwise None.
         :rtype: Optional[Level]
         """
-        return self.level_repository.get_level_by_id(level_id=level_id)
+        pass
     
+    @abstractmethod
     def update_level(self, level: Level) -> Level:
         """
         Update an existing level in the repository.
@@ -46,8 +46,9 @@ class LevelService:
         :rtype: Level
         :raises NotFoundError: If the level with the given ID does not exist.
         """
-        return self.level_repository.update_level(level=level)
+        pass
 
+    @abstractmethod
     def delete_level(self, level_id: int) -> bool:
         """
         Delete a level by its ID.
@@ -57,8 +58,9 @@ class LevelService:
         :rtype: bool
         :raises NotFoundError: If the level with the given ID does not exist.
         """
-        return self.level_repository.delete_level(level_id=level_id)
+        pass
 
+    @abstractmethod
     def get_all_levels(self, limit: int = 100, offset: int = 0) -> list[Level]:
         """
         Retrieve all levels from the repository with pagination.
@@ -68,8 +70,9 @@ class LevelService:
         :return: A list of level entities.
         :rtype: list[Level]
         """
-        return self.level_repository.get_all_levels(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def get_level_id_by_name(self, level_name: str) -> Optional[int]:
         """
         Retrieve the ID of a level by its name.
@@ -78,8 +81,9 @@ class LevelService:
         :return: The ID of the level if found, otherwise None.
         :rtype: Optional[int]
         """
-        return self.level_repository.get_level_id_by_name(level_name=level_name)
+        pass
 
+    @abstractmethod
     def search_levels_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Level]:
         """
         Search levels by name using a partial match.
@@ -90,4 +94,4 @@ class LevelService:
         :return: A list of matching level entities.
         :rtype: list[Level]
         """
-        return self.level_repository.search_levels_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass

@@ -1,11 +1,11 @@
 from cims.core.entities.headhunter import Headhunter
-from cims.core.services.headhunter_service import HeadhunterService
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
 from cims.database.models import HeadhunterDB
 from sqlalchemy.orm import Session
 from cims.core.exceptions import NotFoundError
 from typing import Optional
 
-class SQLAlchemyHeadhunterService(HeadhunterService):
+class SQLAlchemyHeadhunterRepository(HeadhunterRepository):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 

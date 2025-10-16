@@ -1,11 +1,11 @@
 from cims.core.entities.project import Project
-from cims.core.services.project_service import ProjectService
+from cims.core.repositories.project_repository import ProjectRepository
 from cims.core.exceptions import NotFoundError
 from cims.database.models import CustomerDB, ExpertiseDB, ProjectDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
-class SQLAlchemyProjectService(ProjectService):
+class SQLAlchemyProjectRepository(ProjectRepository):
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
@@ -82,13 +82,20 @@ class SQLAlchemyProjectService(ProjectService):
         return True
 
     def get_all_projects(self, limit: int = 100, offset: int = 0) -> list[Project]:
-        db_projects = self.db_session.query(ProjectDB).offset(offset).limit(limit).all()
+        db_projects = (
+            self.db_session.query(ProjectDB)
+            .order_by(ProjectDB.updated_at.desc(), ProjectDB.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
         return [self._to_domain_entity(project) for project in db_projects]
 
     def search_projects_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Project]:
         db_projects = (
             self.db_session.query(ProjectDB)
             .filter(ProjectDB.name.ilike(f"%{name_query}%"))
+            .order_by(ProjectDB.updated_at.desc(), ProjectDB.created_at.desc())
             .offset(offset)
             .limit(limit)
             .all()
@@ -109,6 +116,7 @@ class SQLAlchemyProjectService(ProjectService):
                 CustomerDB.name.ilike(f"%{query}%") |
                 ExpertiseDB.name.ilike(f"%{query}%")
             )
+            .order_by(ProjectDB.updated_at.desc(), ProjectDB.created_at.desc())
             .offset(offset)
             .limit(limit)
             .all()
@@ -140,6 +148,7 @@ class SQLAlchemyProjectService(ProjectService):
         db_projects = (
             self.db_session.query(ProjectDB)
             .filter(ProjectDB.customer_id == customer_id)
+            .order_by(ProjectDB.updated_at.desc(), ProjectDB.created_at.desc())
             .offset(offset)
             .limit(limit)
             .all()

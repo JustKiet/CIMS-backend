@@ -1,12 +1,9 @@
 from cims.core.entities.customer import Customer
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.customer_repository import CustomerRepository
-
-class CustomerService:
-    def __init__(self, customer_repository: CustomerRepository):
-        self.customer_repository = customer_repository
-
+class CustomerRepository(ABC):
+    @abstractmethod
     def create_customer(self, customer: Customer) -> Customer:
         """
         Create a new customer in the repository.
@@ -15,8 +12,9 @@ class CustomerService:
         :return: The created customer entity.
         :rtype: Customer
         """
-        return self.customer_repository.create_customer(customer)
+        pass
 
+    @abstractmethod
     def get_customer_id_by_name(self, customer_name: str) -> Optional[int]:
         """
         Retrieve the ID of a customer by their name.
@@ -25,8 +23,9 @@ class CustomerService:
         :return: The ID of the customer if found, otherwise None.
         :rtype: Optional[int]
         """
-        return self.customer_repository.get_customer_id_by_name(customer_name=customer_name)
+        pass
 
+    @abstractmethod
     def get_customers_by_ids(self, customer_ids: list[int]) -> list[Customer]:
         """
         Retrieve customers by their IDs.
@@ -35,8 +34,9 @@ class CustomerService:
         :return: A list of customer entities.
         :rtype: list[Customer]
         """
-        return self.customer_repository.get_customers_by_ids(customer_ids=customer_ids)
+        pass
     
+    @abstractmethod
     def get_customer_by_id(self, customer_id: int) -> Optional[Customer]:
         """
         Retrieve a customer by its ID.
@@ -45,8 +45,9 @@ class CustomerService:
         :return: The customer entity if found, otherwise None.
         :rtype: Optional[Customer]
         """
-        return self.customer_repository.get_customer_by_id(customer_id=customer_id)
+        pass
     
+    @abstractmethod
     def update_customer(self, customer: Customer) -> Customer:
         """
         Update an existing customer in the repository.
@@ -56,8 +57,9 @@ class CustomerService:
         :rtype: Customer
         :raises NotFoundError: If the customer with the given ID does not exist.
         """
-        return self.customer_repository.update_customer(customer=customer)
+        pass
 
+    @abstractmethod
     def delete_customer(self, customer_id: int) -> bool:
         """
         Delete a customer by its ID.
@@ -67,8 +69,9 @@ class CustomerService:
         :rtype: bool
         :raises NotFoundError: If the customer with the given ID does not exist.
         """
-        return self.customer_repository.delete_customer(customer_id=customer_id)
+        pass
 
+    @abstractmethod
     def get_all_customers(self, limit: int = 100, offset: int = 0) -> list[Customer]:
         """
         Retrieve all customers from the repository with pagination.
@@ -78,8 +81,9 @@ class CustomerService:
         :return: A list of customer entities.
         :rtype: list[Customer]
         """
-        return self.customer_repository.get_all_customers(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_customers_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Customer]:
         """
         Search customers by name using a partial match.
@@ -90,4 +94,4 @@ class CustomerService:
         :return: A list of matching customer entities.
         :rtype: list[Customer]
         """
-        return self.customer_repository.search_customers_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass

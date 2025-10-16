@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.area_service import AreaService
+from cims.core.repositories.area_repository import AreaRepository
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_area_service
+from cims.deps import get_area_repository
 from cims.core.entities.area import Area
 from cims.schemas import (
     AreaCreate,
@@ -32,7 +32,7 @@ router = APIRouter(
 )
 async def create_area(
     area_data: AreaCreate,
-    area_repo: AreaService = Depends(get_area_service),
+    area_repo: AreaRepository = Depends(get_area_repository),
 ):
     """Create a new area."""
     try:
@@ -63,7 +63,7 @@ async def create_area(
 async def get_areas(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    area_repo: AreaService = Depends(get_area_service)
+    area_repo: AreaRepository = Depends(get_area_repository)
 ):
     """Get all areas with pagination."""
     try:
@@ -96,7 +96,7 @@ async def search_areas(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    area_repo: AreaService = Depends(get_area_service)
+    area_repo: AreaRepository = Depends(get_area_repository)
 ):
     """Search areas by name."""
     try:
@@ -130,7 +130,7 @@ async def search_areas(
 )
 async def get_area(
     area_id: int,
-    area_repo: AreaService = Depends(get_area_service)
+    area_repo: AreaRepository = Depends(get_area_repository)
 ):
     """Get an area by ID."""
     try:
@@ -160,7 +160,7 @@ async def get_area(
 async def update_area(
     area_id: int,
     area_data: AreaUpdate,
-    area_repo: AreaService = Depends(get_area_service),
+    area_repo: AreaRepository = Depends(get_area_repository),
 ):
     """Update an area."""
     try:
@@ -203,7 +203,7 @@ async def update_area(
 )
 async def delete_area(
     area_id: int,
-    area_repo: AreaService = Depends(get_area_service)
+    area_repo: AreaRepository = Depends(get_area_repository)
 ):
     """Delete an area."""
     try:

@@ -1,5 +1,5 @@
 from cims.auth import Authenticator
-from cims.core.services.headhunter_service import HeadhunterService
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
 from cims.core.exceptions import NotFoundError, InvalidCredentialsError, UnexpectedError
 from cims.schemas.headhunter import HeadhunterCreate, HeadhunterResponse
 from cims.schemas.auth import Token
@@ -9,8 +9,8 @@ from cims.config import CLogger
 logger = CLogger(__name__).get_logger()
 
 class HeadhunterAuthenticationService:
-    def __init__(self, headhunter_service: HeadhunterService, authenticator: Authenticator):
-        self.headhunter_service = headhunter_service
+    def __init__(self, headhunter_repository: HeadhunterRepository, authenticator: Authenticator):
+        self.headhunter_repository = headhunter_repository
         self.authenticator = authenticator
 
     def register(self, payload: HeadhunterCreate) -> HeadhunterResponse:
@@ -31,7 +31,7 @@ class HeadhunterAuthenticationService:
             role=payload.role,
         )
 
-        headhunter = self.headhunter_service.create_headhunter(headhunter)
+        headhunter = self.headhunter_repository.create_headhunter(headhunter)
         
         if not headhunter.headhunter_id:
             logger.error("Failed to create headhunter. No ID returned.")
@@ -60,7 +60,7 @@ class HeadhunterAuthenticationService:
         :raises NotFoundError: If the headhunter with the given email does not exist.
         :raises InvalidCredentialsError: If the provided password does not match the stored hashed password.
         """
-        headhunter = self.headhunter_service.get_headhunter_by_email(email)
+        headhunter = self.headhunter_repository.get_headhunter_by_email(email)
         if not headhunter:
             logger.error(f"Headhunter with email '{email}' not found.")
             raise NotFoundError(entity="Headhunter", identifier=email)

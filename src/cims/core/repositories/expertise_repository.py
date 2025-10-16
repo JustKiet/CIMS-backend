@@ -1,12 +1,9 @@
 from cims.core.entities.expertise import Expertise
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.expertise_repository import ExpertiseRepository
-
-class ExpertiseService:
-    def __init__(self, expertise_repository: ExpertiseRepository):
-        self.expertise_repository = expertise_repository
-
+class ExpertiseRepository(ABC):
+    @abstractmethod
     def create_expertise(self, expertise: Expertise) -> Expertise:
         """
         Create a new expertise in the repository.
@@ -15,8 +12,9 @@ class ExpertiseService:
         :return: The created expertise entity.
         :rtype: Expertise
         """
-        return self.expertise_repository.create_expertise(expertise)
+        pass
 
+    @abstractmethod
     def get_expertises_by_ids(self, expertise_ids: list[int]) -> list[Expertise]:
         """
         Retrieve expertises by their IDs.
@@ -25,8 +23,9 @@ class ExpertiseService:
         :return: A list of expertise entities.
         :rtype: list[Expertise]
         """
-        return self.expertise_repository.get_expertises_by_ids(expertise_ids=expertise_ids)
+        pass
     
+    @abstractmethod
     def get_expertise_by_id(self, expertise_id: int) -> Optional[Expertise]:
         """
         Retrieve an expertise by its ID.
@@ -35,8 +34,9 @@ class ExpertiseService:
         :return: The expertise entity if found, otherwise None.
         :rtype: Optional[Expertise]
         """
-        return self.expertise_repository.get_expertise_by_id(expertise_id=expertise_id)
+        pass
     
+    @abstractmethod
     def update_expertise(self, expertise: Expertise) -> Expertise:
         """
         Update an existing expertise in the repository.
@@ -46,8 +46,9 @@ class ExpertiseService:
         :rtype: Expertise
         :raises NotFoundError: If the expertise with the given ID does not exist.
         """
-        return self.expertise_repository.update_expertise(expertise=expertise)
+        pass
 
+    @abstractmethod
     def delete_expertise(self, expertise_id: int) -> bool:
         """
         Delete an expertise by its ID.
@@ -57,8 +58,9 @@ class ExpertiseService:
         :rtype: bool
         :raises NotFoundError: If the expertise with the given ID does not exist.
         """
-        return self.expertise_repository.delete_expertise(expertise_id=expertise_id)
+        pass
 
+    @abstractmethod
     def get_all_expertises(self, limit: int = 100, offset: int = 0) -> list[Expertise]:
         """
         Retrieve all expertises from the repository with pagination.
@@ -68,8 +70,9 @@ class ExpertiseService:
         :return: A list of expertise entities.
         :rtype: list[Expertise]
         """
-        return self.expertise_repository.get_all_expertises(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def get_expertise_id_by_name(self, expertise_name: str) -> Optional[int]:
         """
         Retrieve the ID of an expertise by its name.
@@ -78,8 +81,9 @@ class ExpertiseService:
         :return: The ID of the expertise if found, otherwise None.
         :rtype: Optional[int]
         """
-        return self.expertise_repository.get_expertise_id_by_name(expertise_name=expertise_name)
+        pass
 
+    @abstractmethod
     def search_expertises_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Expertise]:
         """
         Search expertises by name using a partial match.
@@ -90,4 +94,4 @@ class ExpertiseService:
         :return: A list of matching expertise entities.
         :rtype: list[Expertise]
         """
-        return self.expertise_repository.search_expertises_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass
