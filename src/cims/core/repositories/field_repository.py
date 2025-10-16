@@ -1,12 +1,9 @@
 from cims.core.entities.field import Field
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.field_repository import FieldRepository
-
-class FieldService:
-    def __init__(self, field_repository: FieldRepository):
-        self.field_repository = field_repository
-
+class FieldRepository(ABC):
+    @abstractmethod
     def create_field(self, field: Field) -> Field:
         """
         Create a new field in the repository.
@@ -15,9 +12,9 @@ class FieldService:
         :return: The created field entity.
         :rtype: Field
         """
-        return self.field_repository.create_field(field=field)
+        pass
 
-
+    @abstractmethod
     def get_field_id_by_name(self, field_name: str) -> Optional[int]:
         """
         Retrieve the ID of a field by its name.
@@ -26,9 +23,9 @@ class FieldService:
         :return: The ID of the field if found, otherwise None.
         :rtype: Optional[int]
         """
-        return self.field_repository.get_field_id_by_name(field_name=field_name)
+        pass
 
-
+    @abstractmethod
     def get_fields_by_ids(self, field_ids: list[int]) -> list[Field]:
         """
         Retrieve fields by their IDs.
@@ -37,9 +34,9 @@ class FieldService:
         :return: A list of Field entities corresponding to the provided IDs.
         :rtype: list[Field]
         """
-        return self.field_repository.get_fields_by_ids(field_ids=field_ids)
+        pass
     
-
+    @abstractmethod
     def get_field_by_id(self, field_id: int) -> Optional[Field]:
         """
         Retrieve a field by its ID.
@@ -48,9 +45,9 @@ class FieldService:
         :return: The field entity if found, otherwise None.
         :rtype: Optional[Field]
         """
-        return self.field_repository.get_field_by_id(field_id=field_id)
+        pass
     
-
+    @abstractmethod
     def update_field(self, field: Field) -> Field:
         """
         Update an existing field in the repository.
@@ -60,9 +57,9 @@ class FieldService:
         :rtype: Field
         :raises NotFoundError: If the field with the given ID does not exist.
         """
-        return self.field_repository.update_field(field=field)
+        pass
 
-
+    @abstractmethod
     def delete_field(self, field_id: int) -> bool:
         """
         Delete a field by its ID.
@@ -72,9 +69,9 @@ class FieldService:
         :rtype: bool
         :raises NotFoundError: If the field with the given ID does not exist.
         """
-        return self.field_repository.delete_field(field_id=field_id)
+        pass
 
-
+    @abstractmethod
     def get_all_fields(self, limit: int = 100, offset: int = 0) -> list[Field]:
         """
         Retrieve all fields from the repository with pagination.
@@ -84,9 +81,9 @@ class FieldService:
         :return: A list of field entities.
         :rtype: list[Field]
         """
-        return self.field_repository.get_all_fields(limit=limit, offset=offset)
+        pass
 
-
+    @abstractmethod
     def search_fields_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Field]:
         """
         Search fields by name using a partial match.
@@ -97,4 +94,4 @@ class FieldService:
         :return: A list of matching field entities.
         :rtype: list[Field]
         """
-        return self.field_repository.search_fields_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass

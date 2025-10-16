@@ -5,28 +5,28 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from contextlib import contextmanager
 
-# Service interfaces
-from cims.core.services.headhunter_service import HeadhunterService
-from cims.core.services.candidate_service import CandidateService
-from cims.core.services.project_service import ProjectService
-from cims.core.services.customer_service import CustomerService
-from cims.core.services.area_service import AreaService
-from cims.core.services.level_service import LevelService
-from cims.core.services.expertise_service import ExpertiseService
-from cims.core.services.field_service import FieldService
-from cims.core.services.nominee_service import NomineeService
+# Repository interfaces
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
+from cims.core.repositories.candidate_repository import CandidateRepository
+from cims.core.repositories.project_repository import ProjectRepository
+from cims.core.repositories.customer_repository import CustomerRepository
+from cims.core.repositories.area_repository import AreaRepository
+from cims.core.repositories.level_repository import LevelRepository
+from cims.core.repositories.expertise_repository import ExpertiseRepository
+from cims.core.repositories.field_repository import FieldRepository
+from cims.core.repositories.nominee_repository import NomineeRepository
 
 # SQLAlchemy implementations
-from cims.services.sqlalchemy import (
-    SQLAlchemyHeadhunterService,
-    SQLAlchemyCandidateService,
-    SQLAlchemyProjectService,
-    SQLAlchemyCustomerService,
-    SQLAlchemyAreaService,
-    SQLAlchemyLevelService,
-    SQLAlchemyExpertiseService,
-    SQLAlchemyFieldService,
-    SQLAlchemyNomineeService
+from cims.integrations.sqlalchemy import (
+    SQLAlchemyHeadhunterRepository,
+    SQLAlchemyCandidateRepository,
+    SQLAlchemyProjectRepository,
+    SQLAlchemyCustomerRepository,
+    SQLAlchemyAreaRepository,
+    SQLAlchemyLevelRepository,
+    SQLAlchemyExpertiseRepository,
+    SQLAlchemyFieldRepository,
+    SQLAlchemyNomineeRepository
 )
 
 def get_db_session(): 
@@ -58,77 +58,77 @@ def create_db_session() -> Session:
     )
     return factory.get_session()
 
-def get_headhunter_service(db_session: Session = Depends(get_db_session)) -> HeadhunterService:
-    return SQLAlchemyHeadhunterService(db_session)
+def get_headhunter_repository(db_session: Session = Depends(get_db_session)) -> HeadhunterRepository:
+    return SQLAlchemyHeadhunterRepository(db_session)
 
-def get_candidate_service(db_session: Session = Depends(get_db_session)) -> CandidateService:
-    return SQLAlchemyCandidateService(db_session)
+def get_candidate_repository(db_session: Session = Depends(get_db_session)) -> CandidateRepository:
+    return SQLAlchemyCandidateRepository(db_session)
 
-def get_project_service(db_session: Session = Depends(get_db_session)) -> ProjectService:
-    return SQLAlchemyProjectService(db_session)
+def get_project_repository(db_session: Session = Depends(get_db_session)) -> ProjectRepository:
+    return SQLAlchemyProjectRepository(db_session)
 
-def get_customer_service(db_session: Session = Depends(get_db_session)) -> CustomerService:
-    return SQLAlchemyCustomerService(db_session)
+def get_customer_repository(db_session: Session = Depends(get_db_session)) -> CustomerRepository:
+    return SQLAlchemyCustomerRepository(db_session)
 
-def get_area_service(db_session: Session = Depends(get_db_session)) -> AreaService:
-    return SQLAlchemyAreaService(db_session)
+def get_area_repository(db_session: Session = Depends(get_db_session)) -> AreaRepository:
+    return SQLAlchemyAreaRepository(db_session)
 
-def get_level_service(db_session: Session = Depends(get_db_session)) -> LevelService:
-    return SQLAlchemyLevelService(db_session)
+def get_level_repository(db_session: Session = Depends(get_db_session)) -> LevelRepository:
+    return SQLAlchemyLevelRepository(db_session)
 
-def get_expertise_service(db_session: Session = Depends(get_db_session)) -> ExpertiseService:
-    return SQLAlchemyExpertiseService(db_session)
+def get_expertise_repository(db_session: Session = Depends(get_db_session)) -> ExpertiseRepository:
+    return SQLAlchemyExpertiseRepository(db_session)
 
-def get_field_service(db_session: Session = Depends(get_db_session)) -> FieldService:
-    return SQLAlchemyFieldService(db_session)
+def get_field_repository(db_session: Session = Depends(get_db_session)) -> FieldRepository:
+    return SQLAlchemyFieldRepository(db_session)
 
-def get_nominee_service(db_session: Session = Depends(get_db_session)) -> NomineeService:
-    return SQLAlchemyNomineeService(db_session)
+def get_nominee_repository(db_session: Session = Depends(get_db_session)) -> NomineeRepository:
+    return SQLAlchemyNomineeRepository(db_session)
 
-def get_authenticator(headhunter_service: HeadhunterService = Depends(get_headhunter_service)) -> Authenticator:
+def get_authenticator(headhunter_repository: HeadhunterRepository = Depends(get_headhunter_repository)) -> Authenticator:
     return Authenticator(
         secret_key=settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
         access_token_expire_minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
-        headhunter_service=headhunter_service
+        headhunter_repository=headhunter_repository
     )
 
 # Utility functions for creating repositories outside of FastAPI DI
-def create_headhunter_service() -> HeadhunterService:
+def create_headhunter_repository() -> HeadhunterRepository:
     session = create_db_session()
-    return SQLAlchemyHeadhunterService(session)
+    return SQLAlchemyHeadhunterRepository(session)
 
-def create_candidate_service() -> CandidateService:
+def create_candidate_repository() -> CandidateRepository:
     session = create_db_session()
-    return SQLAlchemyCandidateService(session)
+    return SQLAlchemyCandidateRepository(session)
 
-def create_project_service() -> ProjectService:
+def create_project_repository() -> ProjectRepository:
     session = create_db_session()
-    return SQLAlchemyProjectService(session)
+    return SQLAlchemyProjectRepository(session)
 
-def create_customer_service() -> CustomerService:
+def create_customer_repository() -> CustomerRepository:
     session = create_db_session()
-    return SQLAlchemyCustomerService(session)
+    return SQLAlchemyCustomerRepository(session)
 
-def create_area_service() -> AreaService:
+def create_area_repository() -> AreaRepository:
     session = create_db_session()
-    return SQLAlchemyAreaService(session)
+    return SQLAlchemyAreaRepository(session)
 
-def create_level_service() -> LevelService:
+def create_level_repository() -> LevelRepository:
     session = create_db_session()
-    return SQLAlchemyLevelService(session)
+    return SQLAlchemyLevelRepository(session)
 
-def create_expertise_service() -> ExpertiseService:
+def create_expertise_repository() -> ExpertiseRepository:
     session = create_db_session()
-    return SQLAlchemyExpertiseService(session)
+    return SQLAlchemyExpertiseRepository(session)
 
-def create_field_service() -> FieldService:
+def create_field_repository() -> FieldRepository:
     session = create_db_session()
-    return SQLAlchemyFieldService(session)
+    return SQLAlchemyFieldRepository(session)
 
-def create_nominee_service() -> NomineeService:
+def create_nominee_repository() -> NomineeRepository:
     session = create_db_session()
-    return SQLAlchemyNomineeService(session)
+    return SQLAlchemyNomineeRepository(session)
 
 @contextmanager
 def get_repositories():
@@ -139,15 +139,15 @@ def get_repositories():
     session = create_db_session()
     try:
         yield {
-            'candidate': SQLAlchemyCandidateService(session),
-            'expertise': SQLAlchemyExpertiseService(session),
-            'field': SQLAlchemyFieldService(session),
-            'area': SQLAlchemyAreaService(session),
-            'level': SQLAlchemyLevelService(session),
-            'headhunter': SQLAlchemyHeadhunterService(session),
-            'project': SQLAlchemyProjectService(session),
-            'customer': SQLAlchemyCustomerService(session),
-            'nominee': SQLAlchemyNomineeService(session),
+            'candidate': SQLAlchemyCandidateRepository(session),
+            'expertise': SQLAlchemyExpertiseRepository(session),
+            'field': SQLAlchemyFieldRepository(session),
+            'area': SQLAlchemyAreaRepository(session),
+            'level': SQLAlchemyLevelRepository(session),
+            'headhunter': SQLAlchemyHeadhunterRepository(session),
+            'project': SQLAlchemyProjectRepository(session),
+            'customer': SQLAlchemyCustomerRepository(session),
+            'nominee': SQLAlchemyNomineeRepository(session),
         }
     finally:
         session.close()

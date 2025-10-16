@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
+import urllib.parse
 
 class PostgresSessionFactory:
     def __init__(
@@ -10,7 +11,8 @@ class PostgresSessionFactory:
         user: str,
         password: str
     ) -> None:
-        self._database_url = f"postgresql://{user}:{password}@{host}:{port}/{name}"
+        encoded_password = urllib.parse.quote_plus(password)
+        self._database_url = f"postgresql://{user}:{encoded_password}@{host}:{port}/{name}"
         self._engine = create_engine(self._database_url, pool_pre_ping=True, pool_size=10, max_overflow=20)
         self._Session = sessionmaker(bind=self._engine, autoflush=False, autocommit=False)
 

@@ -1,12 +1,9 @@
 from cims.core.entities.area import Area
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.area_repository import AreaRepository
-
-class AreaService:
-    def __init__(self, area_repository: 'AreaRepository'):
-        self.area_repository = area_repository
-
+class AreaRepository(ABC):
+    @abstractmethod
     def create_area(self, area: Area) -> Area:
         """
         Create a new area in the repository.
@@ -15,8 +12,9 @@ class AreaService:
         :return: The created area entity.
         :rtype: Area
         """
-        return self.area_repository.create_area(area)
+        pass
 
+    @abstractmethod
     def get_all_areas(self, limit: int = 100, offset: int = 0) -> list[Area]:
         """
         Retrieve all areas from the repository with pagination.
@@ -26,8 +24,9 @@ class AreaService:
         :return: A list of Area entities.
         :rtype: list[Area]
         """
-        return self.area_repository.get_all_areas(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_areas_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Area]:
         """
         Search areas by name using a partial match.
@@ -38,8 +37,9 @@ class AreaService:
         :return: A list of matching area entities.
         :rtype: list[Area]
         """
-        return self.area_repository.search_areas_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass
     
+    @abstractmethod
     def get_area_id_by_name(self, area_name: str) -> Optional[int]:
         """
         Retrieve the ID of an area by its name.
@@ -48,8 +48,9 @@ class AreaService:
         :return: The ID of the area if found, otherwise None.
         :rtype: Optional[int]
         """
-        return self.area_repository.get_area_id_by_name(area_name=area_name)
+        pass
 
+    @abstractmethod
     def get_areas_by_ids(self, area_ids: list[int]) -> list[Area]:
         """
         Retrieve areas by their IDs.
@@ -58,8 +59,9 @@ class AreaService:
         :return: A list of Area entities corresponding to the provided IDs.
         :rtype: list[Area]
         """
-        return self.area_repository.get_areas_by_ids(area_ids=area_ids)
+        pass
     
+    @abstractmethod
     def get_area_by_id(self, area_id: int) -> Optional[Area]:
         """
         Retrieve an area by its ID.
@@ -68,8 +70,9 @@ class AreaService:
         :return: The area entity if found, otherwise None.
         :rtype: Optional[Area]
         """
-        return self.area_repository.get_area_by_id(area_id=area_id)
+        pass
     
+    @abstractmethod
     def update_area(self, area: Area) -> Area:
         """
         Update an existing area in the repository.
@@ -79,8 +82,9 @@ class AreaService:
         :rtype: Area
         :raises NotFoundError: If the area with the given ID does not exist.
         """
-        return self.area_repository.update_area(area=area)
+        pass
 
+    @abstractmethod
     def delete_area(self, area_id: int) -> bool:
         """
         Delete an area by its ID.
@@ -90,4 +94,4 @@ class AreaService:
         :rtype: bool
         :raises NotFoundError: If the area with the given ID does not exist.
         """
-        return self.area_repository.delete_area(area_id=area_id)
+        pass

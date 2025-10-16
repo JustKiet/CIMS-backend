@@ -1,11 +1,11 @@
 from cims.core.entities.expertise import Expertise
-from cims.core.services.expertise_service import ExpertiseService
+from cims.core.repositories.expertise_repository import ExpertiseRepository
 from cims.database.models import ExpertiseDB
 from sqlalchemy.orm import Session
 from cims.core.exceptions import NotFoundError
 from typing import Optional
 
-class SQLAlchemyExpertiseService(ExpertiseService):
+class SQLAlchemyExpertiseRepository(ExpertiseRepository):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 

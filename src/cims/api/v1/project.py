@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from datetime import date, datetime
-from cims.core.services.project_service import ProjectService
-from cims.core.services.customer_service import CustomerService
-from cims.core.services.expertise_service import ExpertiseService
-from cims.core.services.area_service import AreaService
-from cims.core.services.level_service import LevelService
+from cims.core.repositories.project_repository import ProjectRepository
+from cims.core.repositories.customer_repository import CustomerRepository
+from cims.core.repositories.expertise_repository import ExpertiseRepository
+from cims.core.repositories.area_repository import AreaRepository
+from cims.core.repositories.level_repository import LevelRepository
 from cims.core.entities.project import Project
 from cims.core.exceptions import NotFoundError
 from cims.deps import (
-    get_project_service,
-    get_customer_service,
-    get_expertise_service,
-    get_area_service,
-    get_level_service
+    get_project_repository,
+    get_customer_repository,
+    get_expertise_repository,
+    get_area_repository,
+    get_level_repository
 )
 from cims.schemas import (
     ProjectCreate,
@@ -42,9 +42,9 @@ router = APIRouter(
 )
 async def create_project(
     project_data: ProjectCreate,
-    project_repo: ProjectService = Depends(get_project_service),
-    customer_repo: CustomerService = Depends(get_customer_service),
-    expertise_repo: ExpertiseService = Depends(get_expertise_service),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
 ):
     """Create a new project."""
     try:
@@ -99,11 +99,11 @@ async def create_project(
 async def get_projects(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    project_repo: ProjectService = Depends(get_project_service),
-    customer_repo: CustomerService = Depends(get_customer_service),
-    expertise_repo: ExpertiseService = Depends(get_expertise_service),
-    area_repo: AreaService = Depends(get_area_service),
-    level_repo: LevelService = Depends(get_level_service)
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Get all projects with pagination."""
     try:
@@ -159,11 +159,11 @@ async def search_projects(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    project_repo: ProjectService = Depends(get_project_service),
-    customer_repo: CustomerService = Depends(get_customer_service),
-    expertise_repo: ExpertiseService = Depends(get_expertise_service),
-    area_repo: AreaService = Depends(get_area_service),
-    level_repo: LevelService = Depends(get_level_service)
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Search projects by name, customer name, or expertise name."""
     try:
@@ -223,11 +223,11 @@ async def get_projects_by_customer(
     customer_id: int,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    project_repo: ProjectService = Depends(get_project_service),
-    customer_repo: CustomerService = Depends(get_customer_service),
-    expertise_repo: ExpertiseService = Depends(get_expertise_service),
-    area_repo: AreaService = Depends(get_area_service),
-    level_repo: LevelService = Depends(get_level_service)
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    customer_repo: CustomerRepository = Depends(get_customer_repository),
+    expertise_repo: ExpertiseRepository = Depends(get_expertise_repository),
+    area_repo: AreaRepository = Depends(get_area_repository),
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Get all projects for a specific customer with pagination."""
     try:
@@ -292,7 +292,7 @@ async def get_projects_by_customer(
 )
 async def get_project(
     project_id: int,
-    project_repo: ProjectService = Depends(get_project_service)
+    project_repo: ProjectRepository = Depends(get_project_repository)
 ):
     """Get a project by ID."""
     try:
@@ -322,7 +322,7 @@ async def get_project(
 async def update_project(
     project_id: int,
     project_data: ProjectUpdate,
-    project_repo: ProjectService = Depends(get_project_service),
+    project_repo: ProjectRepository = Depends(get_project_repository),
 ):
     """Update a project."""
     try:
@@ -340,15 +340,15 @@ async def update_project(
             start_date=update_data.get('start_date', existing_project.start_date),
             end_date=update_data.get('end_date', existing_project.end_date),
             budget=update_data.get('budget', existing_project.budget),
-            budget_currency=existing_project.budget_currency,
-            type=existing_project.type,
-            required_recruits=existing_project.required_recruits,
-            recruited=existing_project.recruited,
+            budget_currency=update_data.get('budget_currency', existing_project.budget_currency),
+            type=update_data.get('type', existing_project.type),
+            required_recruits=update_data.get('required_recruits', existing_project.required_recruits),
+            recruited=update_data.get('recruited', existing_project.recruited),
             status=update_data.get('status', existing_project.status),
             customer_id=update_data.get('customer_id', existing_project.customer_id),
-            expertise_id=existing_project.expertise_id,
-            area_id=existing_project.area_id,
-            level_id=existing_project.level_id,
+            expertise_id=update_data.get('expertise_id', existing_project.expertise_id),
+            area_id=update_data.get('area_id', existing_project.area_id),
+            level_id=update_data.get('level_id', existing_project.level_id),
             created_at=existing_project.created_at,
             updated_at=datetime.now()
         )
@@ -374,7 +374,7 @@ async def update_project(
 )
 async def delete_project(
     project_id: int,
-    project_repo: ProjectService = Depends(get_project_service)
+    project_repo: ProjectRepository = Depends(get_project_repository)
 ):
     """Delete a project."""
     try:

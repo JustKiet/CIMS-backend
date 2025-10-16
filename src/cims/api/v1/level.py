@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.level_service import LevelService
+from cims.core.repositories.level_repository import LevelRepository
 from cims.core.entities.level import Level
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_level_service
+from cims.deps import get_level_repository
 from cims.schemas import (
     LevelCreate,
     LevelUpdate,
@@ -32,7 +32,7 @@ router = APIRouter(
 )
 async def create_level(
     level_data: LevelCreate,
-    level_repo: LevelService = Depends(get_level_service),
+    level_repo: LevelRepository = Depends(get_level_repository),
 ):
     """Create a new level."""
     try:
@@ -63,7 +63,7 @@ async def create_level(
 async def get_levels(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    level_repo: LevelService = Depends(get_level_service)
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Get all levels with pagination."""
     try:
@@ -93,7 +93,7 @@ async def search_levels(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    level_repo: LevelService = Depends(get_level_service)
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Search levels by name."""
     try:
@@ -125,7 +125,7 @@ async def search_levels(
 )
 async def get_level(
     level_id: int,
-    level_repo: LevelService = Depends(get_level_service)
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Get a level by ID."""
     try:
@@ -155,7 +155,7 @@ async def get_level(
 async def update_level(
     level_id: int,
     level_data: LevelUpdate,
-    level_repo: LevelService = Depends(get_level_service),
+    level_repo: LevelRepository = Depends(get_level_repository),
 ):
     """Update a level."""
     try:
@@ -195,7 +195,7 @@ async def update_level(
 )
 async def delete_level(
     level_id: int,
-    level_repo: LevelService = Depends(get_level_service)
+    level_repo: LevelRepository = Depends(get_level_repository)
 ):
     """Delete a level."""
     try:

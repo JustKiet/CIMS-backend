@@ -1,12 +1,9 @@
 from cims.core.entities.headhunter import Headhunter
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.headhunter_repository import HeadhunterRepository
-
-class HeadhunterService:
-    def __init__(self, headhunter_repository: HeadhunterRepository):
-        self.headhunter_repository = headhunter_repository
-
+class HeadhunterRepository(ABC):
+    @abstractmethod
     def create_headhunter(self, headhunter: Headhunter) -> Headhunter:
         """
         Create a new Headhunter in the repository.
@@ -15,8 +12,9 @@ class HeadhunterService:
         :return: The created Headhunter entity.
         :rtype: Headhunter
         """
-        return self.headhunter_repository.create_headhunter(headhunter=headhunter)
+        pass
 
+    @abstractmethod
     def count_all_headhunters(self) -> int:
         """
         Count the total number of headhunters in the repository.
@@ -24,8 +22,9 @@ class HeadhunterService:
         :return: The total number of headhunters.
         :rtype: int
         """
-        return self.headhunter_repository.count_all_headhunters()
+        pass
 
+    @abstractmethod
     def get_headhunters_by_ids(self, headhunter_ids: list[int]) -> list[Headhunter]:
         """
         Retrieve headhunters by their IDs.
@@ -34,8 +33,9 @@ class HeadhunterService:
         :return: A list of Headhunter entities corresponding to the provided IDs.
         :rtype: list[Headhunter]
         """
-        return self.headhunter_repository.get_headhunters_by_ids(headhunter_ids=headhunter_ids)
+        pass
     
+    @abstractmethod
     def get_headhunter_by_id(self, headhunter_id: int) -> Optional[Headhunter]:
         """
         Retrieve a Headhunter by their ID.
@@ -44,8 +44,9 @@ class HeadhunterService:
         :return: The Headhunter entity if found, otherwise None.
         :rtype: Optional[Headhunter]
         """
-        return self.headhunter_repository.get_headhunter_by_id(headhunter_id=headhunter_id)
+        pass
 
+    @abstractmethod
     def get_headhunter_by_email(self, email: str) -> Optional[Headhunter]:
         """
         Retrieve a Headhunter by their email.
@@ -54,8 +55,9 @@ class HeadhunterService:
         :return: The Headhunter entity if found, otherwise None.
         :rtype: Optional[Headhunter]
         """
-        return self.headhunter_repository.get_headhunter_by_email(email=email)
+        pass
     
+    @abstractmethod
     def update_headhunter(self, headhunter: Headhunter) -> Headhunter:
         """
         Update a existing Headhunter in the repository.
@@ -65,8 +67,9 @@ class HeadhunterService:
         :rtype: Headhunter
         :raises NotFoundError: If the Headhunter with the given ID does not exist.
         """
-        return self.headhunter_repository.update_headhunter(headhunter=headhunter)
+        pass
 
+    @abstractmethod
     def delete_headhunter(self, headhunter_id: int) -> bool:
         """
         Delete a Headhunter by their ID.
@@ -76,8 +79,9 @@ class HeadhunterService:
         :rtype: bool
         :raises NotFoundError: If the Headhunter with the given ID does not exist.
         """
-        return self.headhunter_repository.delete_headhunter(headhunter_id=headhunter_id)
+        pass
 
+    @abstractmethod
     def get_all_headhunters(self, limit: int = 100, offset: int = 0) -> list[Headhunter]:
         """
         Retrieve all headhunters from the repository with pagination.
@@ -87,8 +91,9 @@ class HeadhunterService:
         :return: A list of headhunter entities.
         :rtype: list[Headhunter]
         """
-        return self.headhunter_repository.get_all_headhunters(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_headhunters_by_name(self, name_query: str, limit: int = 100, offset: int = 0) -> list[Headhunter]:
         """
         Search headhunters by name using a partial match.
@@ -99,4 +104,4 @@ class HeadhunterService:
         :return: A list of matching headhunter entities.
         :rtype: list[Headhunter]
         """
-        return self.headhunter_repository.search_headhunters_by_name(name_query=name_query, limit=limit, offset=offset)
+        pass

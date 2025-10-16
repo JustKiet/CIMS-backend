@@ -1,12 +1,12 @@
-from cims.core.services.candidate_service import CandidateService
-from cims.core.services.project_service import ProjectService
-from cims.core.services.headhunter_service import HeadhunterService
+from cims.core.repositories.candidate_repository import CandidateRepository
+from cims.core.repositories.project_repository import ProjectRepository
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.nominee_service import NomineeService
+from cims.core.repositories.nominee_repository import NomineeRepository
 from cims.core.entities.nominee import Nominee
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_nominee_service, get_candidate_service, get_project_service, get_headhunter_service
+from cims.deps import get_nominee_repository, get_candidate_repository, get_project_repository, get_headhunter_repository
 from cims.schemas import (
     NomineeCreate,
     NomineeUpdate,
@@ -35,10 +35,10 @@ router = APIRouter(
 )
 async def create_nominee(
     nominee_data: NomineeCreate,
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Create a new nominee."""
     try:
@@ -92,10 +92,10 @@ async def create_nominee(
 async def get_nominees(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get all nominees with pagination."""
     try:
@@ -152,10 +152,10 @@ async def search_nominees(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Search nominees by status."""
     try:
@@ -217,10 +217,10 @@ async def get_nominees_by_candidate(
     candidate_id: int,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get nominees by candidate ID."""
     try:
@@ -281,10 +281,10 @@ async def get_nominees_by_project(
     project_id: int,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository)
 ):
     """Get nominees by project ID."""
     try:
@@ -368,10 +368,10 @@ async def get_nominees_by_project(
 )
 async def get_nominee(
     nominee_id: int,
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get a nominee by ID."""
     try:
@@ -419,10 +419,10 @@ async def get_nominee(
 async def update_nominee(
     nominee_id: int,
     nominee_data: NomineeUpdate,
-    nominee_repo: NomineeService = Depends(get_nominee_service),
-    candidate_repo: CandidateService = Depends(get_candidate_service),
-    project_repo: ProjectService = Depends(get_project_service),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository),
+    candidate_repo: CandidateRepository = Depends(get_candidate_repository),
+    project_repo: ProjectRepository = Depends(get_project_repository),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Update a nominee."""
     try:
@@ -487,7 +487,7 @@ async def update_nominee(
 )
 async def delete_nominee(
     nominee_id: int,
-    nominee_repo: NomineeService = Depends(get_nominee_service)
+    nominee_repo: NomineeRepository = Depends(get_nominee_repository)
 ):
     """Delete a nominee."""
     try:

@@ -1,12 +1,9 @@
 from cims.core.entities.nominee import Nominee
+from abc import ABC, abstractmethod
 from typing import Optional
 
-from cims.core.repositories.nominee_repository import NomineeRepository
-
-class NomineeService:
-    def __init__(self, nominee_repository: NomineeRepository):
-        self.nominee_repository = nominee_repository
-
+class NomineeRepository(ABC):
+    @abstractmethod
     def create_nominee(self, nominee: Nominee) -> Nominee:
         """
         Create a new nominee in the repository.
@@ -15,8 +12,9 @@ class NomineeService:
         :return: The created nominee entity.
         :rtype: Nominee
         """
-        return self.nominee_repository.create_nominee(nominee=nominee)
+        pass
 
+    @abstractmethod
     def get_nominees_by_ids(self, nominee_ids: list[int]) -> list[Nominee]:
         """
         Retrieve nominees by their IDs.
@@ -25,8 +23,9 @@ class NomineeService:
         :return: A list of nominee entities corresponding to the provided IDs.
         :rtype: list[Nominee]
         """
-        return self.nominee_repository.get_nominees_by_ids(nominee_ids=nominee_ids)
+        pass
     
+    @abstractmethod
     def get_nominee_by_id(self, nominee_id: int) -> Optional[Nominee]:
         """
         Retrieve a nominee by their ID.
@@ -35,8 +34,9 @@ class NomineeService:
         :return: The nominee entity if found, otherwise None.
         :rtype: Optional[Nominee]
         """
-        return self.nominee_repository.get_nominee_by_id(nominee_id=nominee_id)
+        pass
     
+    @abstractmethod
     def update_nominee(self, nominee: Nominee) -> Nominee:
         """
         Update an existing nominee in the repository.
@@ -46,8 +46,9 @@ class NomineeService:
         :rtype: Nominee
         :raises NotFoundError: If the nominee with the given ID does not exist.
         """
-        return self.nominee_repository.update_nominee(nominee=nominee)
+        pass
 
+    @abstractmethod
     def delete_nominee(self, nominee_id: int) -> bool:
         """
         Delete a nominee by their ID.
@@ -57,8 +58,9 @@ class NomineeService:
         :rtype: bool
         :raises NotFoundError: If the nominee with the given ID does not exist.
         """
-        return self.nominee_repository.delete_nominee(nominee_id=nominee_id)
+        pass
 
+    @abstractmethod
     def get_all_nominees(self, limit: int = 100, offset: int = 0) -> list[Nominee]:
         """
         Retrieve all nominees from the repository with pagination.
@@ -68,8 +70,9 @@ class NomineeService:
         :return: A list of nominee entities.
         :rtype: list[Nominee]
         """
-        return self.nominee_repository.get_all_nominees(limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def get_nominees_by_candidate_id(self, candidate_id: int, limit: int = 100, offset: int = 0) -> list[Nominee]:
         """
         Retrieve nominees by candidate ID.
@@ -80,8 +83,9 @@ class NomineeService:
         :return: A list of nominee entities.
         :rtype: list[Nominee]
         """
-        return self.nominee_repository.get_nominees_by_candidate_id(candidate_id=candidate_id, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def get_nominees_by_project_id(self, project_id: int, limit: int = 100, offset: int = 0) -> list[Nominee]:
         """
         Retrieve nominees by project ID.
@@ -92,8 +96,9 @@ class NomineeService:
         :return: A list of nominee entities.
         :rtype: list[Nominee]
         """
-        return self.nominee_repository.get_nominees_by_project_id(project_id=project_id, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_nominees_by_campaign(self, campaign_query: str, limit: int = 100, offset: int = 0) -> list[Nominee]:
         """
         Search nominees by campaign using a partial match.
@@ -104,8 +109,9 @@ class NomineeService:
         :return: A list of matching nominee entities.
         :rtype: list[Nominee]
         """
-        return self.nominee_repository.search_nominees_by_campaign(campaign_query=campaign_query, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def search_nominees_by_status(self, status_query: str, limit: int = 100, offset: int = 0) -> list[Nominee]:
         """
         Search nominees by status.
@@ -116,8 +122,9 @@ class NomineeService:
         :return: A list of matching nominee entities.
         :rtype: list[Nominee]
         """
-        return self.nominee_repository.search_nominees_by_status(status_query=status_query, limit=limit, offset=offset)
+        pass
 
+    @abstractmethod
     def count_all_nominees(self) -> int:
         """
         Count the total number of nominees in the repository.
@@ -125,4 +132,4 @@ class NomineeService:
         :return: The total number of nominees.
         :rtype: int
         """
-        return self.nominee_repository.count_all_nominees()
+        pass

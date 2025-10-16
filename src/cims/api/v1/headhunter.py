@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 import datetime
-from cims.core.services.headhunter_service import HeadhunterService
-from cims.core.services.area_service import AreaService
+from cims.core.repositories.headhunter_repository import HeadhunterRepository
+from cims.core.repositories.area_repository import AreaRepository
 from cims.core.entities.headhunter import Headhunter
 from cims.core.exceptions import NotFoundError
-from cims.deps import get_headhunter_service, get_area_service, get_authenticator
+from cims.deps import get_headhunter_repository, get_area_repository, get_authenticator
 from cims.auth import Authenticator
 from cims.schemas import (
     HeadhunterCreate,
@@ -34,7 +34,7 @@ router = APIRouter(
 )
 async def create_headhunter(
     headhunter_data: HeadhunterCreate,
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
     authenticator: Authenticator = Depends(get_authenticator),
 ):
     """Create a new headhunter."""
@@ -71,8 +71,8 @@ async def create_headhunter(
 async def get_headhunters(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service),
-    area_repo: AreaService = Depends(get_area_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
+    area_repo: AreaRepository = Depends(get_area_repository)
 ):
     """Get all headhunters with pagination."""
     try:
@@ -111,7 +111,7 @@ async def search_headhunters(
     query: str = Query(..., min_length=1, description="Search query"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of items per page"),
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Search headhunters by name."""
     try:
@@ -143,7 +143,7 @@ async def search_headhunters(
 )
 async def get_headhunter_by_email(
     email: str,
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get a headhunter by email."""
     try:
@@ -172,7 +172,7 @@ async def get_headhunter_by_email(
 )
 async def get_headhunter(
     headhunter_id: int,
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Get a headhunter by ID."""
     try:
@@ -202,7 +202,7 @@ async def get_headhunter(
 async def update_headhunter(
     headhunter_id: int,
     headhunter_data: HeadhunterUpdate,
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service),
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository),
 ):
     """Update a headhunter."""
     try:
@@ -247,7 +247,7 @@ async def update_headhunter(
 )
 async def delete_headhunter(
     headhunter_id: int,
-    headhunter_repo: HeadhunterService = Depends(get_headhunter_service)
+    headhunter_repo: HeadhunterRepository = Depends(get_headhunter_repository)
 ):
     """Delete a headhunter."""
     try:

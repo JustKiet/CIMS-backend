@@ -1,11 +1,11 @@
 from cims.core.entities.nominee import Nominee
-from cims.core.services.nominee_service import NomineeService
+from cims.core.repositories.nominee_repository import NomineeRepository
 from cims.core.exceptions import NotFoundError
 from cims.database.models import NomineeDB
 from sqlalchemy.orm import Session
 from typing import Optional
 
-class SQLAlchemyNomineeService(NomineeService):
+class SQLAlchemyNomineeRepository(NomineeRepository):
     def __init__(self, db_session: Session) -> None:
         self.db_session = db_session
 
